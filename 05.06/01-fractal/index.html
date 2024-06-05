@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>MM6</title> 
+  </head>
+  <body>
+    <canvas id="myCan" width="300px" height="300px" style="border: 2px solid red;"></canvas>
+    <script type="module">
+      import * as vigl from "./mylib.js"
+      
+      window.addEventListener("load", () => {
+        vigl.initGL();
+
+        const draw = () => {
+          vigl.render();
+
+          window.requestAnimationFrame(draw)
+        };
+        draw();
+      })
+    </script>
+  </body>
+</html>
