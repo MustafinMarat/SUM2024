@@ -1,14 +1,21 @@
 let
   canvas,
   gl,
-  timeLoc;    
+  timeLoc,
+  mouseLoc,
+  mousePos;
  
 // OpenGL initialization function  
 export function initGL() {
   canvas = document.getElementById("myCan");
   gl = canvas.getContext("webgl2");
   gl.clearColor(0.30, 0.47, 0.8, 1);
+
+  mousePos = new Object();
   
+  mousePos.x = 0;
+  mousePos.y = 0;
+
   // Shader creation
   let vs_txt =
   `#version 300 es
@@ -31,20 +38,20 @@ export function initGL() {
   
   in vec2 DrawPos;
   uniform float Time;
-
-  vec2 ComplMul( vec2 A, vec2 B )
-  { 
-    return vec2(A.x * B.x - A.y * B.y, A.x * B.y + A.y * B.x);
-  }
+  uniform vec2 Mouse;
  
   void main( void )
   {
     float n = 0.0;
-    
-    vec2 Z = DrawPos * 2.0;
+    vec2 Coord = DrawPos / 0.8;
+    vec2 Coord0 = Mouse - vec2(-1.0, 1.0), Coord1 = Mouse + vec2(-1.0, 1.0);
+
+    Coord = Coord0 + 0.5 * (Coord + 1.0) * (Coord1 - Coord0);
+
+    vec2 Z = Coord * 2.0;
     while (n < 255.0 && Z.x * Z.x + Z.y * Z.y < 4.0)
     {
-      Z = vec2(Z.x * Z.x - Z.y * Z.y, 2.0 * Z.x * Z.y) + vec2(cos(Time) / 3.0, sin(Time) / 2.0);  
+      Z = vec2(Z.x * Z.x - Z.y * Z.y, 2.0 * Z.x * Z.y);  
       n += 1.0;
     }
     OutColor = vec4(n / 255.0, n / 255.0, n / 255.0, 1.0);
@@ -78,6 +85,7 @@ export function initGL() {
  
   // Uniform data
   timeLoc = gl.getUniformLocation(prg, "Time");
+  mouseLoc = gl.getUniformLocation(prg, "Mouse");
  
   gl.useProgram(prg);
 }  // End of 'initGL' function               
@@ -109,7 +117,16 @@ export function render() {
  
     gl.uniform1f(timeLoc, t);
   }
+  if (mouseLoc != -1) {
+    gl.uniform2f(mouseLoc, 2.0 * (mousePos.x / canvas.width) - 1.0, 2.0 * (mousePos.y / canvas.height) - 1.0);
+  }
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 } // End of 'render' function
+
+// Mouse handle function
+export function mouseHandle(x, y) {
+  mousePos.x = x;
+  mousePos.y = y;
+} // End of 'mouseHandle' function
  
 console.log("CGSG forever!!! mylib.js imported");

@@ -10,11 +10,11 @@ class _camera {
   up = vec3();
   matrView = mat4(); 
   matrProj = mat4(); 
-  matrVP = mat4(); 
+  matrVP = mat4();
   frameW;
-  frameH; 
+  frameH;
   wp;
-  hp;  
+  hp;
   projSize;
   projDist;
   projFarClip;

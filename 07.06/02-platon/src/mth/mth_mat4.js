@@ -33,11 +33,14 @@ class _mat4 {
 
   // Getting transposition matrix function
   setTrans(dx, dy, dz) {
+    let m = mat4();
     if (typeof dx == 'object') {
-      this.m[3][0] = dx.x, this.m[3][1] = dx.y, this.m[3][2] = dx.z;
+      m.m[3][0] = dx.x, m.m[3][1] = dx.y, m.m[3][2] = dx.z;
     } else {
-      this.m[3][0] = dx, this.m[3][1] = dy, this.m[3][2] = dz;
+      m.m[3][0] = dx, m.m[3][1] = dy, m.m[3][2] = dz;
     }
+    
+    return m;
   } // End of 'setTrans' function
 
   // Matrixes multiplication function
@@ -195,7 +198,7 @@ class _mat4 {
 
   // Getting rotation by vector function
   setRotation(angle, v) {
-    let rad = angle / 180.0 * thisath.PI, s = thisath.sin(rad), c = thisath.cos(rad);
+    let rad = angle / 180.0 * Math.PI, s = Math.sin(rad), c = Math.cos(rad);
     let r = mat4();
     
     r.m = [[c + v.x * v.x * (1 - c), , v.y * v.x * (1 - c) - v.z * s, v.z * v.x * (1 - c) + v.y * s, 0], 
@@ -248,7 +251,7 @@ class _mat4 {
   
   // Getting matrix rotation by x axis function
   setRotateX (angle) {
-    let rad = angle / 180.0 * Math.PI, si = sin(rad), co = cos(rad);
+    let rad = angle / 180.0 * Math.PI, si = Math.sin(rad), co = Math.cos(rad);
 
     let m = mat4();
 
@@ -262,8 +265,8 @@ class _mat4 {
 
   // Getting matrix rotation by y axis function
   setRotateY (angle) {
-    let rad = angle / 180.0 * Math.PI, si = sin(rad), co = cos(rad);
-
+    let rad = angle / 180.0 * Math.PI, si = Math.sin(rad), co = Math.cos(rad);
+    
     let m = mat4();
     
     m.m[0][0] = co;
@@ -276,7 +279,7 @@ class _mat4 {
 
   // Getting matrix rotation by z axis function
   setRotateZ (angle) {
-    let rad = angle / 180.0 * Math.PI, si = sin(rad), co = cos(rad);
+    let rad = angle / 180.0 * Math.PI, si = Math.sin(rad), co = Math.cos(rad);
 
     let m = mat4();
 
@@ -317,13 +320,14 @@ class _mat4 {
   } // End of 'setOrtho' function
 }
 
+// Getting 3x3 matrix determinant function
 function matrDet3x3( a11, a12, a13,
                      a21, a22, a23,
                      a31, a32, a33 )
 {
   return a11 * a22 * a33 + a12 * a23 * a31 + a13 * a21 * a32 -
          a11 * a23 * a32 - a12 * a21 * a33 - a13 * a22 * a31;
-} 
+} // End of 'matrDet3x3' function
 
 export function mat4(...args) {
   return new _mat4(...args);

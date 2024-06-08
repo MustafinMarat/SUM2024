@@ -5,7 +5,7 @@
     <title>MM6</title> 
   </head>
   <body>
-    <canvas id="myCan" width="300px" height="300px" style="border: 2px solid red;"></canvas>
+    <canvas id="myCan" width="1000px" height="1000px" style="border: 2px solid red;"></canvas>
     <script type="module">
       import * as vigl from "./mylib.js"
       
@@ -18,6 +18,10 @@
           window.requestAnimationFrame(draw)
         };
         draw();
+      document.querySelector("#myCan").addEventListener("mousemove", (event) => {
+        console.log(event);
+        vigl.mouseHandle(event.layerX, event.layerY);
+      })
       })
     </script>
   </body>

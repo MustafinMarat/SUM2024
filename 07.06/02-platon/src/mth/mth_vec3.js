@@ -75,7 +75,7 @@ class _vec3 {
 
     if (len == 1 || len == 0)
       return this;
-    return this.div(len);
+    return this.div(Math.sqrt(len));
   } // End of 'norm' function
 
   // Vectors cross propuct function
