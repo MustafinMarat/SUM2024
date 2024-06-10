@@ -50,28 +50,34 @@ class _shader {
     precision highp float;
     in vec3 InPosition;
     in vec3 InNormal;
+
     uniform mat4 MatrWVP;
+    uniform mat4 MatrWInv;
 
     out vec3 DrawNormal;
     
     void main( void )
     {
       gl_Position = MatrWVP * vec4(InPosition, 1);
-      DrawNormal = normalize(mat3(inverse(MatrWVP)) * InNormal);
+      DrawNormal = normalize(mat3(MatrWInv) * InNormal);
     }
     `;
     let fs_txt =
     `#version 300 es
     precision highp float;
-    out vec4 OutColor;
     in vec3 DrawNormal;
 
+    uniform float Time;
     uniform mat4 MatrWVP;
+
+    out vec4 OutColor;
     
     void main( void )
     {
-      vec3 col = vec3(1.0, 0.0, 1.0) * dot(DrawNormal, vec3(0, -1, 0));
-      OutColor = vec4(DrawNormal, 1.0);
+      vec3 L = vec3(0, 0, 2);
+      vec3 N = normalize(faceforward(DrawNormal, -L, DrawNormal));
+      vec3 col = vec3(0.8, 0.47, 0.30) * dot(N, L);
+      OutColor = vec4(col, 1.0);
     }
     `;
     this.shaders[0].src = vs_txt;

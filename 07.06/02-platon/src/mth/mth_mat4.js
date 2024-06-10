@@ -213,8 +213,8 @@ class _mat4 {
   setView(loc, at, up1) {
     let
       dir = at.sub(loc).norm(),
-      right = dir.sub(up1).norm(),
-      up = right.sub(dir).norm();
+      right = dir.cross(up1).norm(),
+      up = right.cross(dir).norm();
     let m = mat4();
     m.m =
       [
