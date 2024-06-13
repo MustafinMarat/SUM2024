@@ -6,23 +6,28 @@ import { WebSocketServer } from "ws"
 
 const app = express();
 
-app.use(express.static("client"));
+app.use(express.static("client")); 
 
 const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server });
-let clients = [];
+
+let allMessages = [];
 
 wss.on("connection", (ws) => {
   ws.on("message", (message) => {
-    console.log(message.toString());
-    let mess = message.toString();
-    for (let client of clients)
-      client.send(mess);
+    let info = JSON.parse(message.toString())
+    if (info.author == "" || info.message == "" || info.author == "System" || info.message == "\n") 
+      ws.send(JSON.stringify({"author": "System", "message": "Invalid message or name."}));
+    else {
+      for (let client of wss.clients)
+        client.send(message.toString());
+      allMessages.push(info);
+    }
   });
-  
-  // ws.send("Hello, new client");
-  clients.push(ws);
+
+  for (let mess of allMessages)
+    ws.send(JSON.stringify(mess));
 });
 
 const host = 'localhost';

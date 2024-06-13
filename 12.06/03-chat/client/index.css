@@ -1,13 +1,57 @@
 .messageBox
 {
   border: 2px rgb(99, 99, 165) solid;
-  width: 100px;
+  min-width: 100px;
   margin: 10px;
   padding: 10px;
   background-color: rgb(186, 201, 206);
-  color: rgb(21, 22, 24);
   border-radius: 12px;
   word-wrap: break-word;
+  float: left;
+  max-width: 400px;
+}
+
+.messageBoxSelf
+{
+  border: 2px rgb(99, 99, 165) solid;
+  min-width: 100px;
+  margin: 10px;
+  padding: 10px;
+  background-color: rgb(195, 215, 221);
+  border-radius: 12px;
+  word-wrap: break-word;
+  float: right;
+  max-width: 400px;
+}
+
+.messegeBoxSystem
+{
+  border: 2px rgb(99, 99, 165) solid;
+  min-width: 100px;
+  margin: 10px;
+  padding: 10px;
+  background-color: rgb(220, 195, 221);
+  border-radius: 12px;
+  word-wrap: break-word;
+  float: left;
+  max-width: 400px;
+}
+
+.authorName
+{
+  text-align: left;
+  border-radius: 5px;
+  color: rgb(21, 22, 26);
+  background-color: rgb(221, 236, 241);
+  min-width: 30px;
+  display: inline-block;
+  padding: 3px;
+  margin-bottom: 5px;
+}
+
+.messageText
+{
+  color: rgb(21, 22, 24);
 }
 
 #chatWindow
@@ -17,6 +61,11 @@
   width: 500px; 
   height: 500px; 
   overflow-y: scroll;
+  border-radius: 5px;
+}
+
+#chatWindow::-webkit-scrollbar {
+  display: none;
 }
 
 #messageInput
@@ -25,9 +74,15 @@
   height: 50px;
   overflow-y: scroll;
   resize: none;
+  padding: 3px;
   background-color: rgb(186, 201, 206);
   color: rgb(21, 22, 24);
   border: 1px solid rgb(46, 50, 59);
+  border-radius: 10px;
+}
+
+#messageInput::-webkit-scrollbar {
+  display: none;
 }
 
 #messageSender
@@ -40,4 +95,19 @@
 
 body {
   background: rgb(218, 224, 164);
+}
+
+#nameInput
+{
+  width: 300px;
+  height: 30px;
+  border-radius: 10px;
+  background-color: rgb(186, 201, 206);
+  color: rgb(21, 22, 24);
+  border: 1px solid rgb(46, 50, 59);
+}
+
+#chat td 
+{
+  display: inline-block;
 }
