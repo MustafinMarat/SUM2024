@@ -1,0 +1,43 @@
+.messageBox
+{
+  border: 2px rgb(99, 99, 165) solid;
+  width: 100px;
+  margin: 10px;
+  padding: 10px;
+  background-color: rgb(186, 201, 206);
+  color: rgb(21, 22, 24);
+  border-radius: 12px;
+  word-wrap: break-word;
+}
+
+#chatWindow
+{
+  border: 1px gray solid;
+  background-color: beige; 
+  width: 500px; 
+  height: 500px; 
+  overflow-y: scroll;
+}
+
+#messageInput
+{
+  width: 300px;
+  height: 50px;
+  overflow-y: scroll;
+  resize: none;
+  background-color: rgb(186, 201, 206);
+  color: rgb(21, 22, 24);
+  border: 1px solid rgb(46, 50, 59);
+}
+
+#messageSender
+{
+  width: 50px;
+  height: 50px;
+  background-color: rgb(238, 223, 174);
+  border-radius: 30px;
+}
+
+body {
+  background: rgb(218, 224, 164);
+}

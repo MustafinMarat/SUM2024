@@ -1,5 +1,5 @@
-import {mat4} from './mth_mat4';
-import {vec3} from './mth_vec3';
+import { mat4 } from './mth_mat4';
+import { vec3 } from './mth_vec3';
 
 // Camera class
 class _camera {
@@ -67,6 +67,7 @@ class _camera {
   } // End of 'setSize' function
 }
 
+// Camera creation function
 export function camera(...args) {
   return new _camera(...args);
-}
+} // End of 'camera' function

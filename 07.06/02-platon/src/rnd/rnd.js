@@ -1,73 +1,68 @@
-import {camera} from "../mth/mth_cam";
-import {vec3} from '../mth/mth_vec3';
-import {shader} from './res/shd.js';
-import {prim} from './res/prim.js';
+import { vec3 } from '../mth/mth_vec3.js'
+import { mat4 } from '../mth/mth_mat4.js'
+import { camera } from '../mth/mth_cam.js'
 
 // Render object class
 class _renderer {
+  gl;
+  canvas;
+  prims = [];
   cam = camera();
 
-  constructor() {
-    this.initGL();
-  }
+  constructor(id) {
+    this.canvas = document.querySelector(id);
+    this.cam = camera();
   
-  // Frame render function
-  render() {
-    const size = 0.8;
-    if (gl.rnd.shd.id == null) {
-      const vert = [-size, size, 0, -size, -size, 0, size, size, 0, size, -size, 0];
-      const prm = prim(gl.POINTS, vert);
-    }
-    prm.draw();
-    gl.rnd.shd.apply();
-
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.clear(gl.DEPTH_BUFFER_BIT);
-  } // End of 'render' function
-
-  // Grafix library intialization function
-  initGL() {
-    const canvas = document.querySelector("#glCanvas");
-
-    if (window.gl == undefined) {
-      window.gl = canvas.getContext("webgl2");
-      gl.rnd = this;
-      if (gl == null) {
-        alert("WebGL2 not supported");
-        return;
-      }
-    }
-    gl.enable(gl.DEPTH_TEST);
-    gl.clearColor(0.30, 0.47, 0.8, 1.0);
-    
-    this.initRender();
-
-    shader("default").apply();
-
-    const anim = () => {
-      this.render();
-
-      window.requestAnimationFrame(anim);
-    }
-
-    anim();
-  } // End of 'initGL' function
-
-  // Render initialization
-  initRender() {
+    this.cam.frameW = this.canvas.clientWidth;
+    this.cam.frameH = this.canvas.clientHeight;
+    this.cam.projDist = 0.1;
     this.cam.projSize = 0.1;
     this.cam.projFarClip = 300;
-    this.cam.projDist = 0.1;
-    this.cam.frameW = 47;
-    this.cam.frameH = 47;
+
+    this.cam.setCam(vec3(0, 0, 4), vec3(0), vec3(0, 1, 0));
+    this.cam.setProj(0.1, 0.1, 300);
+
+    // Web grafix library initialization
+    this.gl = this.canvas.getContext("webgl2");
   
-    this.cam.loc = vec3(0, 14, 70);
-    this.cam.at = vec3(0, 0, 0);
-    this.cam.up = vec3(0, 5, 0);
-  
-    this.cam.setCam(this.cam.loc, this.cam.at, this.cam.up); 
+    if (this.gl == null) {
+      alert("WebGL2 not supported");
+      return;
+    }
+
+    this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.clearColor(0.30, 0.47, 0.8, 1.0);
+    
+    const anim = () => {
+      this.render();
+    
+      window.requestAnimationFrame(anim);
+    }  
+
+    anim();
   }
-} // End of 'initRender' function
+
+  // Adding primitives to render object function
+  addPrims(prims) {
+    this.prims = this.prims.concat(prims);
+  } // End if 'addPrims' function
+
+  // Drawing frame function
+  render() {
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
+    
+    const date = new Date();
+    let t = date.getMinutes() * 60 +
+          date.getSeconds() +
+          date.getMilliseconds() / 1000;
+
+    // Drawing primitives
+    if (this.prims != undefined)
+      for (let prm of this.prims)
+        prm.draw(prm.matr.mul(mat4().setRotateX(30 * t)).mul(mat4().setRotateZ(47 * t)), this.cam);
+  } // End of 'render' function 
+}  
 
 // Renderer creation function
 export function renderer(...args) {

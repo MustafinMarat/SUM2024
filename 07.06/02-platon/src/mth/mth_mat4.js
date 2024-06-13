@@ -329,6 +329,7 @@ function matrDet3x3( a11, a12, a13,
          a11 * a23 * a32 - a12 * a21 * a33 - a13 * a22 * a31;
 } // End of 'matrDet3x3' function
 
+// Matrix creation function
 export function mat4(...args) {
   return new _mat4(...args);
-}
+} // End of 'mat4' function
