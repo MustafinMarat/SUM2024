@@ -97,14 +97,14 @@ body {
   background: rgb(218, 224, 164);
 }
 
-#nameInput
+.input
 {
   width: 300px;
   height: 30px;
   border-radius: 10px;
   background-color: rgb(186, 201, 206);
   color: rgb(21, 22, 24);
-  border: 1px solid rgb(46, 50, 59);
+  border: 1px solid rgb(46, 50, 59);  
 }
 
 #chat td 
