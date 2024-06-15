@@ -88,8 +88,10 @@ class _prim {
       this.rnd.gl.uniformMatrix4fv(this.shd.uniforms['MatrWVP'].loc, false, new Float32Array(wvp.toArray()));
     if (this.shd.uniforms['MatrWInv'])
       this.rnd.gl.uniformMatrix4fv(this.shd.uniforms['MatrWInv'].loc, false, new Float32Array(winv.toArray()));
-    if (this.shd.uniforms['Time'])       
-      this.rnd.gl.uniform1f(this.shd.uniforms['Time'],loc, t);
+    if (this.shd.uniforms['Time'])
+      this.rnd.gl.uniform1f(this.shd.uniforms['Time'].loc, t);
+    if (this.shd.uniforms['CamDir'])       
+      this.rnd.gl.uniform3f(this.shd.uniforms['CamDir'].loc, this.rnd.cam.dir.x, this.rnd.cam.dir.y, this.rnd.cam.dir.z);
 
     this.rnd.gl.bindVertexArray(this.vertArray);
     this.rnd.gl.bindBuffer(this.rnd.gl.ARRAY_BUFFER, this.vertBuffer);

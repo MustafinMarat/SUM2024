@@ -72,14 +72,14 @@ class _shader {
     in vec3 DrawNormal;
 
     uniform float Time;
-    uniform mat4 MatrWVP;
+    uniform vec3 CamDir; 
 
     out vec4 OutColor;
     
     void main( void )
     {
-      vec3 L = vec3(0, 0, 1);
-      vec3 N = normalize(faceforward(DrawNormal, -L, DrawNormal));
+      vec3 L = normalize(vec3(cos(Time * 5.0) * 2.0, sin(Time * 5.0) * 2.0, 1.0));
+      vec3 N = normalize(faceforward(DrawNormal, CamDir, DrawNormal));
       vec3 col = vec3(0.8, 0.47, 0.30) * dot(N, L);
       OutColor = vec4(col, 1.0);
     }

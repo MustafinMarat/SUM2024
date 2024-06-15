@@ -270,8 +270,8 @@ class _mat4 {
     let m = mat4();
     
     m.m[0][0] = co;
-    m.m[0][2] = si;
-    m.m[2][0] = -si;
+    m.m[0][2] = -si;
+    m.m[2][0] = si;
     m.m[2][2] = co; 
     
     return m;
