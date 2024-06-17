@@ -1,6 +1,8 @@
 import { vec3 } from '../mth/mth_vec3.js'
 import { mat4 } from '../mth/mth_mat4.js'
 import { camera } from '../mth/mth_cam.js'
+import { shader } from './res/shd.js';
+import { prim } from './res/prim.js';
 
 // Render object class
 class _renderer {
@@ -8,6 +10,7 @@ class _renderer {
   canvas;
   controlable = false;
   prims = [];
+  shds = [];
   cam = camera();
 
   constructor(id) {
@@ -45,10 +48,23 @@ class _renderer {
     anim();
   }
 
-  // Adding primitives to render object function
-  addPrims(prims) {
-    this.prims = this.prims.concat(prims);
-  } // End if 'addPrims' function
+  // Adding primitives (in shader) to render object function
+  async addPrims(shdName, primsData) {
+    let newShd;
+    for (shd of this.shds) 
+      if (shd.name == shdName) {
+        newShd = snd;
+        break;
+      }
+    if (newShd == undefined) {
+      newShd = shader(shdName, this);
+      await newShd.load();
+      this.shds.push(newShd);
+    }
+    for (let primData of primsData) {
+      this.prims.push(prim(newShd, primData));
+    }
+  } // End of 'addPrims' function
 
   // Drawing frame function
   render() {
@@ -63,7 +79,7 @@ class _renderer {
     // Drawing primitives
     if (this.prims != undefined)
       for (let prm of this.prims)
-        prm.draw(prm.matr.mul(mat4().setRotateX(30 * t)).mul(mat4().setRotateZ(47 * t)), this.cam);
+        prm.draw(prm.matrix.mul(mat4().setRotateY(30 * t)), this.cam);
   } // End of 'render' function 
 
   setControl() {

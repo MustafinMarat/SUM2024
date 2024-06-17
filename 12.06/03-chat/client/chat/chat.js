@@ -30,7 +30,7 @@ function initializeCommunication() {
 
     message.appendChild(author);
     message.appendChild(messageText);
-    message.id = info.id;
+    //message.id = info.id;
 
     let messageTr = document.createElement("tr");
     messageTr.appendChild(message);

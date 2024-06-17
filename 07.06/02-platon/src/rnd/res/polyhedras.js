@@ -1,16 +1,17 @@
-import { prim, vertex } from "./prim.js";
+import { primData, vertex } from "./prim.js";
 import { vec3 } from "../../mth/mth_vec3.js";
 import { mat4 } from "../../mth/mth_mat4.js";
 
 // Getting tetrahedron primitive function
-export function setTetrahedron(shd) {
-  const sqrt3 = Math.sqrt(3);
-  const sqrt6 = Math.sqrt(6);
+export function setTetrahedron() {
   const vert = [
-    vertex(0, 0, -sqrt3 / 3), vertex(sqrt6 / 6, 0, sqrt3 / 6), vertex(-sqrt6 / 6, 0, sqrt3 / 6), vertex(0, sqrt6 / 3, 0),
+    vertex(0, 0, 1), vertex(1, 0, 0), vertex(0, 1, 0), vertex(1) 
   ];
   const ind = [
-    0, 1, 2, 0, 3, 2, 2, 3, 1, 1, 3, 0,
+    0, 1, 2, 
+    0, 1, 3, 
+    0, 2, 3, 
+    1, 2, 3
   ];
 
   const vertexes = [];
@@ -21,11 +22,13 @@ export function setTetrahedron(shd) {
     vertexes.push(vrtx);
   }
 
-  return prim(shd, vertexes);
+  const prmData = primData(vertexes);
+  prmData.matrix = mat4().setTrans(-0.5, -0.5, -0.5);
+  return prmData;
 } // End of 'setTetrahedron' function
 
 // Getting cube primitive function
-export function setCube(shd) {
+export function setCube() {
   const vert =  [
     vertex(-0.5), vertex(0.5, -0.5, -0.5), vertex(-0.5, 0.5, -0.5), 
     vertex(-0.5, -0.5, 0.5), vertex(0.5, 0.5, -0.5), 
@@ -53,11 +56,11 @@ export function setCube(shd) {
     vertexes.push(vrtx);
   }
 
-  return prim(shd, vertexes); 
+  return primData(vertexes); 
 } // End of 'setCube' function
 
 // Getting octahedron primitive function
-export function setOctahedron(shd) {
+export function setOctahedron() {
   const sqrt2 = Math.sqrt(2) / 2;
   const vert = [
     vertex(sqrt2, 0, 0), vertex(-sqrt2, 0, 0),
@@ -76,11 +79,11 @@ export function setOctahedron(shd) {
     vrtx.normal = vec3(vert[i].normal); 
     vertexes.push(vrtx);
   }
-  return prim(shd, vertexes);
+  return primData(vertexes);
 } // End of 'setOctahedron' function
 
 // Getting icosahedron primitive function
-export function setIcosahedron(shd) {
+export function setIcosahedron() {
   const vert = [];
 
   let angle = 0;
@@ -112,11 +115,11 @@ export function setIcosahedron(shd) {
     vrtx.normal = vec3(vert[i].normal); 
     vertexes.push(vrtx);
   }
-  return prim(shd, vertexes);
+  return primData(vertexes);
 } // End of 'setIcosahedron' function
 
 // Getting dodecahedron primitive function
-export function setDodecahedron(shd) {
+export function setDodecahedron() {
   // Create icosahedron
   const icovert = [];
 
@@ -174,11 +177,11 @@ export function setDodecahedron(shd) {
     vrtx.normal = vec3(vert[i].normal); 
     vertexes.push(vrtx);
   }
-  return prim(shd, vertexes);
+  return primData(vertexes);
 } // End of 'setDodecahedron' function
 
 // Getting rhombic triacontahedron (30 faces) primitive function
-export function set30hedron(shd) {
+export function set30hedron() {
   const phi = (1 + Math.sqrt(5)) / 2, h = phi;
 
   let vert = [vertex(0, Math.sqrt(2) * phi / 2, 0)];
@@ -262,7 +265,7 @@ export function set30hedron(shd) {
     vertexes.push(vrtx);
   }
 
-  let prm = prim(shd, vertexes);
-  prm.matr = mat4().setScale(0.5).mul(mat4().setTrans(0, 0.5, 0)); 
-  return prm;
+  let prmData = primData(vertexes);
+  prmData.matrix = mat4().setScale(0.5).mul(mat4().setTrans(0, 0.5, 0)); 
+  return prmData;
 } // End of 'set30hedron' function

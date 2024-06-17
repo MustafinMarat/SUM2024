@@ -19,32 +19,39 @@ export function vertex(...args) {
   return new _vertex(...args);
 } // End of 'vertex' function
 
+// Primitive data class
+class _primData {
+  matrix = mat4();
+
+  constructor(vertexes, indexes) {
+    autoNormal(vertexes, indexes);
+    this.vertexes = [];
+    for (let vect of vertexes) {
+      this.vertexes.push(vect.point.x);
+      this.vertexes.push(vect.point.y);
+      this.vertexes.push(vect.point.z);
+      this.vertexes.push(vect.normal.x);
+      this.vertexes.push(vect.normal.y);
+      this.vertexes.push(vect.normal.z);
+    }
+
+    this.indexes = indexes;
+  }
+}
+
 // Primitive class
 class _prim {
-  shd;
-  matr = mat4();
-  rnd;
   vertArray;
   vertBuffer;
   indBuffer;
   numOfElem;
 
-  constructor(shd, vertexes, indexes) {
-    let vert = [];
-
+  constructor(shd, data) {
     this.shd = shd;
     this.rnd = this.shd.rnd;
-    autoNormal(vertexes, indexes);
-    for (let vect of vertexes) {
-      vert.push(vect.point.x);
-      vert.push(vect.point.y);
-      vert.push(vect.point.z);
-      vert.push(vect.normal.x);
-      vert.push(vect.normal.y);
-      vert.push(vect.normal.z);
-    }
-
-    this.numOfElem = vertexes.length;
+    this.matrix = data.matrix;
+    
+    this.numOfElem = data.vertexes.length;
     
     const posLoc = this.rnd.gl.getAttribLocation(shd.id, "InPosition");
     const normLoc = this.rnd.gl.getAttribLocation(shd.id, "InNormal");
@@ -52,7 +59,7 @@ class _prim {
     this.rnd.gl.bindVertexArray(this.vertArray);
     this.vertBuffer = this.rnd.gl.createBuffer();
     this.rnd.gl.bindBuffer(this.rnd.gl.ARRAY_BUFFER, this.vertBuffer);
-    this.rnd.gl.bufferData(this.rnd.gl.ARRAY_BUFFER, new Float32Array(vert), this.rnd.gl.STATIC_DRAW);
+    this.rnd.gl.bufferData(this.rnd.gl.ARRAY_BUFFER, new Float32Array(data.vertexes), this.rnd.gl.STATIC_DRAW);
     
     if (posLoc != -1) {
       this.rnd.gl.vertexAttribPointer(posLoc, 3, this.rnd.gl.FLOAT, false, 24, 0);
@@ -63,12 +70,12 @@ class _prim {
       this.rnd.gl.enableVertexAttribArray(normLoc);
     }
     
-    if (indexes != undefined) {
-      this.numOfElem = indexes.length;
+    if (data.indexes != undefined) {
+      this.numOfElem = data.indexes.length;
       
       this.indBuffer = this.rnd.gl.createBuffer();
       this.rnd.gl.bindBuffer(this.rnd.gl.ELEMENT_ARRAY_BUFFER, this.indBuffer);
-      this.rnd.gl.bufferData(this.rnd.gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(indexes), this.rnd.gl.STATIC_DRAW);  
+      this.rnd.gl.bufferData(this.rnd.gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(data.indexes), this.rnd.gl.STATIC_DRAW);  
     } 
   }
 
@@ -142,3 +149,8 @@ function autoNormal(vertexes, indexes) {
 export function prim(...args) {
   return new _prim(...args);
 } // End of 'prim' function
+
+// Primitive data creation function
+export function primData(...args) {
+  return new _primData(...args);
+} // End of 'primData' function

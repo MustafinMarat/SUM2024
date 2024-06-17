@@ -1,26 +1,8 @@
 // Shader class
 class _shader {
-  /*
-  async _init(name) {
-    this.name = name;
-    this.id = null;
-    this.shaders =
-    [
-       {
-         id: null,
-         type: gl.VERTEX_SHADER,
-         name: "vert",
-         src: "",
-       },
-       {
-        id: null,
-        type: gl.FRAGMENT_SHADER,
-        name: "frag",
-        src: "",
-      }
-    ];
+  async load() {
     for (const s of this.shaders) {
-      let response = await fetch(`bin/shaders/${name}/${s.name}.glsl`);
+      let response = await fetch(`bin/shaders/${this.name}/${s.name}.glsl`);
       let src = await response.text();
       if (typeof src == "string" && src != "")
         s.src = src;
@@ -28,68 +10,6 @@ class _shader {
     // recompile shaders
     this.updateShadersSource();
   }
-  */
-  // Shader initialization function
-  staticInit(name, rnd) {
-    this.name = name;
-    this.rnd = rnd;
-    this.id = null;
-    this.shaders =
-    [
-       {
-         id: null,
-         type: this.rnd.gl.VERTEX_SHADER,
-         name: "vert",
-         src: "",
-       },
-       {
-        id: null,
-        type: this.rnd.gl.FRAGMENT_SHADER,
-        name: "frag",
-        src: "",
-      }
-    ];
-    let vs_txt =
-    `#version 300 es
-    precision highp float;
-    in vec3 InPosition;
-    in vec3 InNormal;
-
-    uniform mat4 MatrWVP;
-    uniform mat4 MatrWInv;
-
-    out vec3 DrawNormal;
-    
-    void main( void )
-    {
-      gl_Position = MatrWVP * vec4(InPosition, 1);
-      DrawNormal = normalize(mat3(MatrWInv) * InNormal);
-    }
-    `;
-    let fs_txt =
-    `#version 300 es
-    precision highp float;
-    in vec3 DrawNormal;
-
-    uniform float Time;
-    uniform vec3 CamDir; 
-
-    out vec4 OutColor;
-    
-    void main( void )
-    {
-      vec3 L = normalize(vec3(cos(Time * 5.0) * 2.0, sin(Time * 5.0) * 2.0, 1.0));
-      vec3 N = normalize(faceforward(DrawNormal, CamDir, DrawNormal));
-      vec3 col = vec3(0.8, 0.47, 0.30) * dot(N, L);
-      OutColor = vec4(col, 1.0);
-    }
-    `;
-    this.shaders[0].src = vs_txt;
-    this.shaders[1].src = fs_txt;
-    // recompile shaders
-    this.updateShadersSource();
-  } // End of 'staticInit' function 
-
   // Shader updation function
   updateShadersSource() { 
     this.shaders[0].id = null;
@@ -169,8 +89,25 @@ class _shader {
   } // End of 'apply' function
 
   constructor(name, rnd) {
-    /// this._init(name);
-    this.staticInit(name, rnd);
+    this.name = name;
+    this.rnd = rnd;
+    this.id = null;
+    this.shaders =
+    [
+       {
+         id: null,
+         type: this.rnd.gl.VERTEX_SHADER,
+         name: "vert",
+         src: "",
+       },
+       {
+        id: null,
+        type: this.rnd.gl.FRAGMENT_SHADER,
+        name: "frag",
+        src: "",
+      }
+    ];
+    // this.staticInit(name, rnd);
   }
 }
 
