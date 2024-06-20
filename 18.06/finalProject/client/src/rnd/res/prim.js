@@ -1,17 +1,26 @@
-import { vec3 } from "../../mth/mth_vec3.js";
+import { vec3, vec2 } from "../../mth/mth_vec3.js";
 import { mat4 } from "../../mth/mth_mat4.js";
 import { ubo_buffer } from "./buffer.js";
+import { texture, image } from "./texture.js";
 
 // Vertex base class
 class _vertex {
   point = vec3();
   normal = vec3();
+  texCoord = vec2();
 
   constructor(x, y, z) {
     if (typeof x == 'object')
       this.point = vec3(x);
     else
       this.point = vec3(x, y, z);
+  }
+
+  setTex(x, y) {
+    if (typeof x == 'object')
+      this.texCoord = vec2(x);
+    else
+      this.texCoord = vec2(x, y);
   }
 }
 
@@ -34,6 +43,8 @@ class _primData {
       this.vertexes.push(vect.normal.x);
       this.vertexes.push(vect.normal.y);
       this.vertexes.push(vect.normal.z);
+      this.vertexes.push(vect.texCoord.x);
+      this.vertexes.push(vect.texCoord.y);
     }
 
     this.indexes = indexes;
@@ -48,18 +59,19 @@ class _prim {
   numOfElem;
 
   constructor(mtl, data) {
-    this.rnd = this.shd.rnd;
+    this.rnd = mtl.shd.rnd;
     this.mtl = mtl;
     this.shd = mtl.shd;
     
     this.matrix = data.matrix;
 
     this.ubo = ubo_buffer(this.rnd, "Prim", this.shd.uniformBlocks['Prim'].size, 0);
-    
+
     this.numOfElem = data.vertexes.length;
     
-    const posLoc = this.rnd.gl.getAttribLocation(shd.id, "InPosition");
-    const normLoc = this.rnd.gl.getAttribLocation(shd.id, "InNormal");
+    const posLoc = this.rnd.gl.getAttribLocation(this.shd.id, "InPosition");
+    const normLoc = this.rnd.gl.getAttribLocation(this.shd.id, "InNormal");
+    const texLoc = this.rnd.gl.getAttribLocation(this.shd.id, "InTexCoord");
     this.vertArray = this.rnd.gl.createVertexArray();
     this.rnd.gl.bindVertexArray(this.vertArray);
     this.vertBuffer = this.rnd.gl.createBuffer();
@@ -67,12 +79,16 @@ class _prim {
     this.rnd.gl.bufferData(this.rnd.gl.ARRAY_BUFFER, new Float32Array(data.vertexes), this.rnd.gl.STATIC_DRAW);
     
     if (posLoc != -1) {
-      this.rnd.gl.vertexAttribPointer(posLoc, 3, this.rnd.gl.FLOAT, false, 24, 0);
+      this.rnd.gl.vertexAttribPointer(posLoc, 3, this.rnd.gl.FLOAT, false, 32, 0);
       this.rnd.gl.enableVertexAttribArray(posLoc);
     }
     if (normLoc != -1) {
-      this.rnd.gl.vertexAttribPointer(normLoc, 3, this.rnd.gl.FLOAT, false, 24, 12);
+      this.rnd.gl.vertexAttribPointer(normLoc, 3, this.rnd.gl.FLOAT, false, 32, 12);
       this.rnd.gl.enableVertexAttribArray(normLoc);
+    }
+    if (texLoc != -1) {
+      this.rnd.gl.vertexAttribPointer(texLoc, 2, this.rnd.gl.FLOAT, false, 32, 24);
+      this.rnd.gl.enableVertexAttribArray(texLoc);
     }
     
     if (data.indexes != undefined) {
@@ -85,19 +101,22 @@ class _prim {
   }
 
   // Drawing primitive function
-  draw(world, cam) {
+  draw(world) {
     this.mtl.apply();
     
-    let wvp = world.mul(cam.matrVP);
+    if (world == undefined)
+      world = mat4();
+    world = this.matrix.mul(world);
+    let wvp = world.mul(this.rnd.cam.matrVP);
     let winv = world.inverse().transpose();
     
     if (this.shd.uniformBlocks["Prim"] != undefined) {
-      this.ubo.update(new Float32Array(wvp.toArray().concat(winv.toArray(), world.toArray())));
+      this.ubo.update(0, new Float32Array(wvp.toArray().concat(winv.toArray(), world.toArray())));
       this.ubo.apply(this.shd);
     }
     
     if (this.shd.uniforms['Time'])
-      this.rnd.gl.uniform1f(this.shd.uniforms['Time'].loc, this.rnd.timer.globalTime);
+      this.rnd.gl.uniform1f(this.shd.uniforms['Time'].loc, this.rnd.timer.localTime);
     if (this.shd.uniforms['CamLoc'])
       this.rnd.gl.uniform3f(this.shd.uniforms['CamLoc'].loc, this.rnd.cam.loc.x, this.rnd.cam.loc.y, this.rnd.cam.loc.z);
 

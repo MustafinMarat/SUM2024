@@ -25,6 +25,7 @@ MatLib.push({"name": "Black Rubber",    "Ka": vec3(0.02, 0.02, 0.02),          "
 // Material class
 class _mtl {
   tex = [];
+  texCon = [-1, -1, -1, -1, -1, -1, -1, -1];
   constructor(shd, name, ka, kd, ks, ph, trans ) {
     this.rnd = shd.rnd;
     this.name = name;
@@ -37,7 +38,7 @@ class _mtl {
     this.trans = trans;
    
     this.ubo = ubo_buffer(this.rnd, "Material", this.shd.uniformBlocks["Material"].size, 1);
-    this.ubo.update(new Float32Array([ka.x, ka.y, ka.z, 0, kd.x, kd.y, kd.z, trans, ks.x, ks.y, ks.z, ph]));
+    this.ubo.update(0, new Float32Array([ka.x, ka.y, ka.z, 0, kd.x, kd.y, kd.z, trans, ks.x, ks.y, ks.z, ph]));
   }
 
   apply() {
@@ -49,24 +50,18 @@ class _mtl {
       if (this.tex[i])
       {
         this.rnd.gl.activeTexture(this.rnd.gl.TEXTURE0 + i);
-        glBindTexture(this.tex[i].type, this.tex[i].id);
+        this.rnd.gl.bindTexture(this.tex[i].type, this.tex[i].id);
       }
-    }
-  
-    if (this.tex.length > 0)
-    {
-      this.rnd.gl.activeTexture(this.rnd.gl.TEXTURE0 + 8);
-      this.rnd.gl.bindTexture(this.rnd.gl.TEXTURE_2D, this.tex[0].id);
     }
   }
 
-  ///
-  /*
   attachTex(tex) {
+    if (tex.length >= 8)
+      return;
     this.tex[this.tex.length - 1] = tex;
-    this.uboUpdate(Mtl->MtlPattern->MtlFmt->FullSize, sizeof(INT) * TBS_TEX_MAX, Mtl->TexCon);
+    this.texCon[this.tex.length - 1] = 1;
+    this.ubo.update(16 * 3, new Uint32Array(this.texCon));
   }
-  */
 }
 
 // Material creation function

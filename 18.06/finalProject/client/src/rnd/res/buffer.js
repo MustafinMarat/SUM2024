@@ -10,9 +10,9 @@ class _buffer {
     rnd.gl.bindBuffer(type, this.id);
     rnd.gl.bufferData(type, size, rnd.gl.STATIC_DRAW);
   }
-  update(data) {
+  update(offset, data) {
     this.rnd.gl.bindBuffer(this.type, this.id);
-    this.rnd.gl.bufferSubData(this.type, 0, data);
+    this.rnd.gl.bufferSubData(this.type, offset, data);
   }
 }
 export function buffer(...args) {

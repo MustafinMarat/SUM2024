@@ -1,5 +1,5 @@
 import { primData, vertex } from "./prim.js";
-import { vec3 } from "../../mth/mth_vec3.js";
+import { vec3, vec2 } from "../../mth/mth_vec3.js";
 import { mat4 } from "../../mth/mth_mat4.js";
 
 // Getting tetrahedron primitive function
@@ -18,7 +18,6 @@ export function setTetrahedron() {
 
   for (let i of ind) {
     let vrtx = vertex(vert[i].point);
-    vrtx.normal = vec3(vert[i].normal); 
     vertexes.push(vrtx);
   }
 
@@ -37,24 +36,35 @@ export function setCube() {
   const ind = [
     0, 1, 2, 
     1, 2, 4, 
-    1, 4, 7, 
-    1, 7, 5, 
-    7, 5, 3, 
-    7, 3, 6,
+    5, 1, 7,
+    1, 7, 4,
+    5, 3, 7,
+    3, 7, 6,
     0, 1, 3,
-    3, 1, 5,
-    6, 3, 0,
-    6, 0, 2,
-    2, 6, 7,
+    1, 3, 5,
+    3, 0, 6,
+    0, 6, 2,
+    6, 2, 7,
     2, 7, 4
   ];
   const vertexes = [];
 
   for (let i of ind) {
     let vrtx = vertex(vert[i].point);
-    vrtx.normal = vec3(vert[i].normal); 
     vertexes.push(vrtx);
   }
+
+  const tex = [
+    vec2(0, 0),
+    vec2(1, 0),
+    vec2(0, 1),
+    vec2(1, 0),
+    vec2(0, 1),
+    vec2(1, 1)
+  ]
+
+  for (let i = 0; i < ind.length; i++)
+    vertexes[i].setTex(tex[i % 6]);
 
   return primData(vertexes); 
 } // End of 'setCube' function
@@ -76,7 +86,6 @@ export function setOctahedron() {
 
   for (let i of ind) {
     let vrtx = vertex(vert[i].point);
-    vrtx.normal = vec3(vert[i].normal); 
     vertexes.push(vrtx);
   }
   return primData(vertexes);
@@ -112,7 +121,6 @@ export function setIcosahedron() {
 
   for (let i of ind) {
     let vrtx = vertex(vert[i].point);
-    vrtx.normal = vec3(vert[i].normal); 
     vertexes.push(vrtx);
   }
   return primData(vertexes);
@@ -173,8 +181,7 @@ export function setDodecahedron() {
   const vertexes = [];
 
   for (let i of ind) {
-    let vrtx = vertex(vert[i].point);
-    vrtx.normal = vec3(vert[i].normal); 
+    let vrtx = vertex(vert[i].point); 
     vertexes.push(vrtx);
   }
   return primData(vertexes);
@@ -261,7 +268,6 @@ export function set30hedron() {
 
   for (let i of ind) {
     let vrtx = vertex(vert[i].point);
-    vrtx.normal = vec3(vert[i].normal); 
     vertexes.push(vrtx);
   }
 
@@ -269,3 +275,38 @@ export function set30hedron() {
   prmData.matrix = mat4().setScale(0.5).mul(mat4().setTrans(0, 0.5, 0)); 
   return prmData;
 } // End of 'set30hedron' function
+
+export function setSphere(sizePhi, sizeTheta) {
+  const vertexes = [];
+  const PI = Math.PI;
+  const stepPhi = 2 * PI / sizePhi;
+  const stepTheta = PI / sizeTheta;
+
+  const phiStepSin = Math.sin(stepPhi);
+  const phiStepCos = Math.cos(stepPhi);
+  const thetaStepSin = Math.sin(stepTheta);
+  const thetaStepCos = Math.cos(stepTheta);
+
+  for (let theta = 0; theta < 2 * PI; theta += stepTheta)
+    for (let phi = -PI / 2; phi < PI / 2; phi += stepPhi) {
+      let phiSin = Math.sin(phi);
+      let phiCos = Math.cos(phi);
+      let thetaSin = Math.sin(theta);
+      let thetaCos = Math.cos(theta);
+
+      let thetaWithStepSin = thetaSin * thetaStepCos + thetaCos * thetaStepSin;
+      let phiWithStepSin = phiSin * phiStepCos + phiCos * phiStepSin;
+      let thetaWithStepCos = thetaCos * thetaStepCos - thetaSin * thetaStepSin;
+      let phiWithStepCos = phiCos * phiStepCos - phiSin * phiStepSin;
+
+      vertexes.push(vertex(phiCos * thetaCos, phiSin, phiCos * thetaSin));
+      vertexes.push(vertex(phiWithStepCos * thetaCos, phiWithStepSin, phiWithStepCos * thetaSin));
+      vertexes.push(vertex(phiCos * thetaWithStepCos, phiSin, phiCos * thetaWithStepSin));
+      
+      vertexes.push(vertex(phiWithStepCos * thetaWithStepCos, phiWithStepSin, phiWithStepCos * thetaWithStepSin));
+      vertexes.push(vertex(phiWithStepCos * thetaCos, phiWithStepSin, phiWithStepCos * thetaSin));
+      vertexes.push(vertex(phiCos * thetaWithStepCos, phiSin, phiCos * thetaWithStepSin));
+    }
+  
+  return primData(vertexes);
+}
