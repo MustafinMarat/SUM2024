@@ -312,7 +312,31 @@ export function setSphere(sizePhi, sizeTheta) {
 }
 
 export function setLine(start, end) {
-  const vertexes = [vertex(start), vertex(end), vertex(0), 
-                    vertex(start), vertex(0), vertex(end)];
+  const vertexes = [vertex(start), vertex(end), vertex(end.add(vec3(0, 0.005, 0))), 
+                    vertex(start), vertex(end.add(vec3(0, 0.005, 0))), vertex(start.add(vec3(0, 0.005, 0)))];
+  return primData(vertexes);
+}
+
+export function setAABB(minBB, maxBB) {
+  const vertexes = [
+    vertex(minBB), vertex(minBB.x, minBB.y, maxBB.z), vertex(maxBB.x, minBB.y, maxBB.z),
+    vertex(minBB), vertex(maxBB.x, minBB.y, minBB.z), vertex(maxBB.x, minBB.y, maxBB.z),
+
+    vertex(minBB.x, maxBB.y, minBB.z), vertex(minBB.x, maxBB.y, maxBB.z), vertex(maxBB),
+    vertex(minBB.x, maxBB.y, minBB.z), vertex(maxBB.x, maxBB.y, minBB.z), vertex(maxBB),
+
+    vertex(minBB), vertex(minBB.x, minBB.y, maxBB.z), vertex(minBB.x, maxBB.y, maxBB.z),
+    vertex(minBB), vertex(minBB.x, maxBB.y, maxBB.z), vertex(minBB.x, maxBB.y, minBB.z),
+
+    vertex(minBB), vertex(maxBB.x, minBB.y, minBB.z), vertex(maxBB.x, maxBB.y, minBB.z),
+    vertex(minBB), vertex(minBB.x, maxBB.y, minBB.z), vertex(maxBB.x, maxBB.y, minBB.z),
+
+    vertex(minBB.x, minBB.y, maxBB.z), vertex(maxBB.x, minBB.y, maxBB.z), vertex(minBB.x, maxBB.y, maxBB.z),
+    vertex(maxBB.x, minBB.y, maxBB.z), vertex(minBB.x, maxBB.y, maxBB.z), vertex(maxBB),
+
+    vertex(maxBB.x, minBB.y, minBB.z), vertex(maxBB.x, minBB.y, maxBB.z), vertex(maxBB.x, maxBB.y, minBB.z),
+    vertex(maxBB.x, minBB.y, maxBB.z), vertex(maxBB.x, maxBB.y, minBB.z), vertex(maxBB)
+  ];
+
   return primData(vertexes);
 }

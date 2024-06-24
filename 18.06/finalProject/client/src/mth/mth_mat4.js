@@ -197,7 +197,7 @@ class _mat4 {
   } // End of 'inverse' function
 
   // Getting rotation by vector function
-  setRotation(angle, v) {
+  setRotation(v, angle) {
     const rad = angle / 180.0 * Math.PI, s = Math.sin(rad), c = Math.cos(rad);
     let r = mat4();
     r.m = [

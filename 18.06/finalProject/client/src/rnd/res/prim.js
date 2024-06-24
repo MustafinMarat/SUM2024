@@ -48,6 +48,25 @@ class _primData {
     }
 
     this.indexes = indexes;
+    
+    this.minBB = vec3(vertexes[0].point);
+    this.maxBB = vec3(vertexes[0].point);
+    
+    for (let vert of vertexes) {
+      if (vert.point.x > this.maxBB.x)
+        this.maxBB.x = vert.point.x;
+      if (vert.point.y > this.maxBB.y)
+        this.maxBB.y = vert.point.y;
+      if (vert.point.z > this.maxBB.z)
+        this.maxBB.z = vert.point.z;
+
+      if (vert.point.x < this.minBB.x)
+        this.minBB.x = vert.point.x;
+      if (vert.point.y < this.minBB.y)
+        this.minBB.y = vert.point.y;
+      if (vert.point.z < this.minBB.z)
+        this.minBB.z = vert.point.z;
+    }
   }
 }
 
@@ -55,6 +74,7 @@ class _primData {
 class _prim {
   vertArray;
   vertBuffer;
+
   indBuffer;
   numOfElem;
 
@@ -63,7 +83,9 @@ class _prim {
     this.mtl = mtl;
     this.shd = mtl.shd;
     this.type = type == "lines" ? this.rnd.gl.LINES : this.rnd.gl.TRIANGLES; 
-    
+    this.minBB = data.minBB;
+    this.maxBB = data.maxBB;
+
     this.matrix = data.matrix;
 
     this.ubo = ubo_buffer(this.rnd, "Prim", this.shd.uniformBlocks['Prim'].size, 0);
@@ -91,14 +113,6 @@ class _prim {
       this.rnd.gl.vertexAttribPointer(texLoc, 2, this.rnd.gl.FLOAT, false, 32, 24);
       this.rnd.gl.enableVertexAttribArray(texLoc);
     }
-    
-    if (data.indexes != undefined) {
-      this.numOfElem = data.indexes.length;
-      
-      this.indBuffer = this.rnd.gl.createBuffer();
-      this.rnd.gl.bindBuffer(this.rnd.gl.ELEMENT_ARRAY_BUFFER, this.indBuffer);
-      this.rnd.gl.bufferData(this.rnd.gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(data.indexes), this.rnd.gl.STATIC_DRAW);  
-    } 
   }
 
   // Drawing primitive function

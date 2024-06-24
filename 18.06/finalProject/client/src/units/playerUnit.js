@@ -10,6 +10,10 @@ class _playerUnit {
     this.rnd = rnd;
     this.pos = vec3();
     this.speed = 0.1;
+    this.velocity = vec3();
+    this.jumpSpeed = 0;
+    this.headX = 0;
+    this.headY = 0;
     this.init();
 
     this.rnd.cam.setCam(vec3(0, 8, 8), vec3(0), vec3(0, 1, 0))
@@ -19,7 +23,7 @@ class _playerUnit {
   async init() {
     const shd = await this.rnd.addShader("phong");
     const mtl = getMtl(shd, "Ruby");
-    this.prim = prim(mtl, topo.setSphere(100, 100));
+    this.prim = prim(mtl, topo.setSphere(500, 500));
     this.prim.matrix = this.prim.matrix.mul(mat4().setScale(0.1));
 
     // Adding unit to render's units array
@@ -33,18 +37,48 @@ class _playerUnit {
 
   // Responsing function
   response() {
-    
-    if (this.rnd.input.keys["KeyD"])
-      this.pos = this.pos.add(vec3(1, 0, 0).mul(this.speed));
-    if (this.rnd.input.keys["KeyA"])
-      this.pos = this.pos.add(vec3(-1, 0, 0).mul(this.speed));
-    if (this.rnd.input.keys["KeyW"])
-      this.pos = this.pos.add(vec3(0, 0, -1).mul(this.speed));
-    if (this.rnd.input.keys["KeyS"])
-      this.pos = this.pos.add(vec3(0, 0, 1).mul(this.speed));
+    // Movement
+    if (this.rnd.input.mButtons[0])
+      this.rnd.canvas.requestPointerLock();
 
-    this.rnd.cam.setCam(this.pos.add(vec3(0, 1, 1)), this.pos.add(vec3(0, 0.5, 0)), this.rnd.cam.up);
-    //this.rnd.cam.setCam(this.rnd.cam.loc, this.rnd.cam.at, vec3(0, 1, 0));
+    let dir = this.rnd.cam.dir;
+    dir.y = 0;
+
+    if (this.pos.y == 0) {
+      this.velocity = vec3();
+      if (this.rnd.input.keys["KeyD"])
+        this.velocity = this.velocity.add(vec3(-dir.z, 0, dir.x));
+      if (this.rnd.input.keys["KeyA"])
+        this.velocity = this.velocity.add(vec3(dir.z, 0, -dir.x));
+      if (this.rnd.input.keys["KeyW"])
+        this.velocity = this.velocity.add(dir);
+      if (this.rnd.input.keys["KeyS"])
+        this.velocity = this.velocity.add(dir.neg());
+    }
+      
+    this.pos = this.pos.add(this.velocity.norm().mul(this.speed));
+
+    if (this.jumpSpeed > -1)
+      this.jumpSpeed -= 0.005;
+    
+    if (this.rnd.input.keysClick["Space"] && this.pos.y == 0)
+      this.jumpSpeed = 0.1;
+
+    this.pos.y += this.jumpSpeed;
+
+    if (this.pos.y < 0)
+      this.pos.y = 0;
+    
+    this.headX = (window.innerWidth - this.rnd.input.mX) / 1000;
+    this.headY = (window.innerHeight - this.rnd.input.mY) / 1000;
+
+    if (this.headY >= 1.5)
+      this.headY = 1.5;
+    if (this.headY <= -1.5)
+      this.headY = -1.5;
+
+    dir = vec3(Math.sin(this.headX) * Math.cos(this.headY), Math.sin(this.headY), Math.cos(this.headX) * Math.cos(this.headY)).mul(3);
+    this.rnd.cam.setCam(this.pos.add(vec3(0, 1, 0)), this.pos.add(dir), vec3(0, 1, 0));
   } // End of 'response' function
 }
 
