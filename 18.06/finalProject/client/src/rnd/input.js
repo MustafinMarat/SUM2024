@@ -46,7 +46,7 @@ class _input {
       "ArrowDown", "Shift", "Control", "Alt", "ShiftLeft", "ShiftRight", "ControlLeft",
       "ControlRight", "PageUp", "PageDown", "End", "Home",
       "Digit0", "Digit1",
-      "KeyA", "KeyP",
+      "KeyP", "KeyW", "KeyS", "KeyA", "KeyD",
       "Numpad0", "NumpadMultiply",
       "F1",
     ].forEach(key => {

@@ -7,8 +7,9 @@ function main() {
   const rnd = renderer("#glCanvas");
 
   unit.playerUnit(rnd);
-  unit.cubeUnit(rnd, vec3(0, 0.5, 0), 0.5);
+  //unit.cubeUnit(rnd, vec3(0, 0.5, 0), 0.5);
   unit.plateUnit(rnd, 30, 0);
+  unit.testUnit(rnd);
   //unit.controlUnit(rnd);
 
   setInterval(() => {

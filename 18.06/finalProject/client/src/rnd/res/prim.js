@@ -58,10 +58,11 @@ class _prim {
   indBuffer;
   numOfElem;
 
-  constructor(mtl, data) {
+  constructor(mtl, data, type) {
     this.rnd = mtl.shd.rnd;
     this.mtl = mtl;
     this.shd = mtl.shd;
+    this.type = type == "lines" ? this.rnd.gl.LINES : this.rnd.gl.TRIANGLES; 
     
     this.matrix = data.matrix;
 
@@ -124,10 +125,10 @@ class _prim {
     this.rnd.gl.bindBuffer(this.rnd.gl.ARRAY_BUFFER, this.vertBuffer);
     if (this.shd.id != null) {
       if (this.indBuffer == undefined)
-        this.rnd.gl.drawArrays(this.rnd.gl.TRIANGLES, 0, this.numOfElem);
+        this.rnd.gl.drawArrays(this.type, 0, this.numOfElem);
       else {
         this.rnd.gl.bindBuffer(this.rnd.gl.ELEMENT_ARRAY_BUFFER, this.indBuffer);
-        this.rnd.gl.drawElements(this.rnd.gl.TRIANGLES, this.numOfElem, this.rnd.gl.UNSIGNED_INT, 0);
+        this.rnd.gl.drawElements(this.type, this.numOfElem, this.rnd.gl.UNSIGNED_INT, 0);
       }
     }
   } // End of 'draw' function

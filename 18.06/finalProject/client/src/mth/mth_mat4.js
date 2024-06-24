@@ -198,14 +198,14 @@ class _mat4 {
 
   // Getting rotation by vector function
   setRotation(angle, v) {
-    let rad = angle / 180.0 * Math.PI, s = Math.sin(rad), c = Math.cos(rad);
+    const rad = angle / 180.0 * Math.PI, s = Math.sin(rad), c = Math.cos(rad);
     let r = mat4();
-    
-    r.m = [[c + v.x * v.x * (1 - c), , v.y * v.x * (1 - c) - v.z * s, v.z * v.x * (1 - c) + v.y * s, 0], 
-           [v.x * v.y * (1 - c) + v.z * s, c + v.y * v.y * (1 - c), v.z * v.y * (1 - c) - v.x * s, 0],
-           [v.x * v.z * (1 - c) - v.y * s, v.y * v.z * (1 - c) + v.x * s, c + v.z * v.z * (1 - c), 0], 
-           [0, 0, 0, 1]]
-
+    r.m = [
+      c + v.x * v.x * (1 - c), v.y * v.x * (1 - c) - v.z * s, v.z * v.x * (1 - c) + v.y * s, 0,
+      v.x * v.y * (1 - c) + v.z * s, c + v.y * v.y * (1 - c), v.z * v.y * (1 - c) - v.x * s, 0,
+      v.x * v.z * (1 - c) - v.y * s, v.y * v.z * (1 - c) + v.x * s, c + v.z * v.z * (1 - c), 0,
+      0, 0, 0, 1
+    ];
     return r;
   } // End of 'setRotation' function
 

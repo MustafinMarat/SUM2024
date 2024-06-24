@@ -2,7 +2,7 @@ import { getMtl } from "../rnd/res/mtl.js";
 import { mat4 } from "../mth/mth_mat4.js";
 import { vec3 } from "../mth/mth_vec3.js";
 import { prim } from "../rnd/res/prim.js";
-import * as sample from "../rnd/res/samples.js";
+import * as topo from "../rnd/res/topology.js";
 
 // Test unit class
 class _playerUnit {
@@ -19,7 +19,7 @@ class _playerUnit {
   async init() {
     const shd = await this.rnd.addShader("phong");
     const mtl = getMtl(shd, "Ruby");
-    this.prim = prim(mtl, sample.setSphere(100, 100));
+    this.prim = prim(mtl, topo.setSphere(100, 100));
     this.prim.matrix = this.prim.matrix.mul(mat4().setScale(0.1));
 
     // Adding unit to render's units array
@@ -34,16 +34,17 @@ class _playerUnit {
   // Responsing function
   response() {
     
-    if (this.rnd.input.keys["ArrowRight"])
-      this.pos = this.pos.add(vec3(1, 0, 0).mul(this.speed))
-    if (this.rnd.input.keys["ArrowLeft"])
-      this.pos = this.pos.add(vec3(-1, 0, 0).mul(this.speed))
-    if (this.rnd.input.keys["ArrowUp"])
-      this.pos = this.pos.add(vec3(0, 0, -1).mul(this.speed))
-    if (this.rnd.input.keys["ArrowDown"])
-      this.pos = this.pos.add(vec3(0, 0, 1).mul(this.speed))
+    if (this.rnd.input.keys["KeyD"])
+      this.pos = this.pos.add(vec3(1, 0, 0).mul(this.speed));
+    if (this.rnd.input.keys["KeyA"])
+      this.pos = this.pos.add(vec3(-1, 0, 0).mul(this.speed));
+    if (this.rnd.input.keys["KeyW"])
+      this.pos = this.pos.add(vec3(0, 0, -1).mul(this.speed));
+    if (this.rnd.input.keys["KeyS"])
+      this.pos = this.pos.add(vec3(0, 0, 1).mul(this.speed));
 
     this.rnd.cam.setCam(this.pos.add(vec3(0, 1, 1)), this.pos.add(vec3(0, 0.5, 0)), this.rnd.cam.up);
+    //this.rnd.cam.setCam(this.rnd.cam.loc, this.rnd.cam.at, vec3(0, 1, 0));
   } // End of 'response' function
 }
 

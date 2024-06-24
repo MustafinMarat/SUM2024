@@ -45,13 +45,13 @@ class _mtl {
     this.shd.apply();
     this.ubo.apply(this.shd);
 
-    for (let i = 0; i < this.tex.length; i++)
-    {
+    for (let i = 0; i < this.tex.length; i++) {
       if (this.tex[i])
-      {
-        this.rnd.gl.activeTexture(this.rnd.gl.TEXTURE0 + i);
-        this.rnd.gl.bindTexture(this.tex[i].type, this.tex[i].id);
-      }
+        if (this.shd.uniforms[`Tex${i}`]) {
+          this.rnd.gl.activeTexture(this.rnd.gl.TEXTURE0 + i);
+          this.rnd.gl.bindTexture(this.tex[i].type, this.tex[i].id);
+          this.rnd.gl.uniform1i(this.shd.uniforms[`Tex${i}`].loc, i);
+        }
     }
   }
 

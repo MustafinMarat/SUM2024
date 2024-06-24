@@ -1,7 +1,7 @@
 import { getMtl } from "../rnd/res/mtl.js";
 import { mat4 } from "../mth/mth_mat4.js";
 import { prim } from "../rnd/res/prim.js";
-import * as sample from "../rnd/res/samples.js";
+import * as topo from "../rnd/res/topology.js";
 
 // Test unit class
 class _cubeUnit {
@@ -16,7 +16,7 @@ class _cubeUnit {
   async init() {
     const shd = await this.rnd.addShader("phong");
     const mtl = getMtl(shd, "Gold");
-    this.prim = prim(mtl, sample.setCube());
+    this.prim = prim(mtl, topo.setCube());
     this.prim.matrix = this.prim.matrix.mul(mat4().mul(mat4().setScale(this.size).setTrans(this.pos)));
 
     // Adding unit to render's units array

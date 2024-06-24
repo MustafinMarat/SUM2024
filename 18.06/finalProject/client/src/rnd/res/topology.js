@@ -310,3 +310,9 @@ export function setSphere(sizePhi, sizeTheta) {
   
   return primData(vertexes);
 }
+
+export function setLine(start, end) {
+  const vertexes = [vertex(start), vertex(end), vertex(0), 
+                    vertex(start), vertex(0), vertex(end)];
+  return primData(vertexes);
+}
