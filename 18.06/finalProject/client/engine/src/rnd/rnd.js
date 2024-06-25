@@ -12,6 +12,7 @@ class _renderer {
   controlable = false;
   shds = [];
   units = [];
+  AABB = [];
   cam = camera();
 
   constructor(id) {
@@ -65,9 +66,9 @@ class _renderer {
 
   async addShader(shdName) {
     let newShd;
-    for (shd of this.shds) 
+    for (let shd of this.shds) 
       if (shd.name == shdName) {
-        newShd = snd;
+        newShd = shd;
         break;
       }
     if (newShd == undefined) {

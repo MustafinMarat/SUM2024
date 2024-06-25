@@ -1,9 +1,9 @@
 import resolve from "@rollup/plugin-node-resolve"
 
 export default {
-  input: "./client/index.js",
+  input: "./client/engine/engine.js",
   output: {
-    dir: "./client/output",
+    dir: "./client/engine/output",
     format: "iife",
     sourcemap: "inline" 
   },

@@ -1,7 +1,6 @@
 import { vec3, vec2 } from "../../mth/mth_vec3.js";
 import { mat4 } from "../../mth/mth_mat4.js";
 import { ubo_buffer } from "./buffer.js";
-import { texture, image } from "./texture.js";
 
 // Vertex base class
 class _vertex {
@@ -70,6 +69,70 @@ class _primData {
   }
 }
 
+// Bound Box class
+class _box {
+  curVertexes = [];
+
+  constructor(minBB, maxBB) {
+    this.minBB = vec3();
+    this.maxBB = vec3();
+
+    const vertexes = [
+        // Up
+        vec3(minBB), vec3(minBB.x, minBB.y, maxBB.z), vec3(maxBB.x, minBB.y, maxBB.z), vec3(maxBB.x, minBB.y, minBB.z), 
+        // Down
+        vec3(minBB.x, maxBB.y, minBB.z), vec3(minBB.x, maxBB.y, maxBB.z), vec3(maxBB), vec3(maxBB.x, maxBB.y, minBB.z)
+    ];
+
+    const ind = [0, 1, 2, 2, 0, 3, 
+                 4, 5, 6, 6, 4, 7,
+
+                 0, 1, 5, 0, 5, 4,
+                 0, 4, 3, 4, 3, 7,
+                 3, 2, 7, 2, 7, 6,
+                 1, 2, 6, 1, 6, 5
+    ];
+
+    this.vertexes = [];
+
+    for (let i of ind) {
+      let vert = vertex(vertexes[i]);
+      this.vertexes.push(vert);
+    }
+  }
+
+  updateBB() {
+    this.minBB = vec3(this.curVertexes[0].point);
+    this.maxBB = vec3(this.curVertexes[0].point);
+    for (let vert of this.curVertexes) {
+      if (vert.point.x > this.maxBB.x)
+        this.maxBB.x = vert.point.x;
+      if (vert.point.y > this.maxBB.y)
+        this.maxBB.y = vert.point.y;
+      if (vert.point.z > this.maxBB.z)
+        this.maxBB.z = vert.point.z;
+
+      if (vert.point.x < this.minBB.x)
+        this.minBB.x = vert.point.x;
+      if (vert.point.y < this.minBB.y)
+        this.minBB.y = vert.point.y;
+      if (vert.point.z < this.minBB.z)
+        this.minBB.z = vert.point.z;
+    }
+  }
+
+  mulMatr(m) {
+    for (let i = 0; i < this.vertexes.length; i++)
+      this.curVertexes[i] = vertex(this.vertexes[i].point.mulMatr(m));
+    this.updateBB();
+  }
+}
+
+// Bound Box creation function
+export function box(...args) {
+  return new _box(...args);
+} // End of 'primData' function
+
 // Primitive class
 class _prim {
   vertArray;
@@ -78,13 +141,17 @@ class _prim {
   indBuffer;
   numOfElem;
 
-  constructor(mtl, data, type) {
+  world = mat4();
+
+  constructor(mtl, data, isBB=true) {
     this.rnd = mtl.shd.rnd;
     this.mtl = mtl;
     this.shd = mtl.shd;
-    this.type = type == "lines" ? this.rnd.gl.LINES : this.rnd.gl.TRIANGLES; 
-    this.minBB = data.minBB;
-    this.maxBB = data.maxBB;
+    this.type = this.rnd.gl.TRIANGLES;
+    if (isBB) { 
+      this.BB = box(data.minBB, data.maxBB);
+      this.rnd.AABB.push(this.BB);
+    }
 
     this.matrix = data.matrix;
 
@@ -122,6 +189,10 @@ class _prim {
     if (world == undefined)
       world = mat4();
     world = this.matrix.mul(world);
+    
+    if (this.BB)
+      this.BB.mulMatr(world);
+
     let wvp = world.mul(this.rnd.cam.matrVP);
     let winv = world.inverse().transpose();
     
@@ -189,3 +260,4 @@ export function prim(...args) {
 export function primData(...args) {
   return new _primData(...args);
 } // End of 'primData' function
+

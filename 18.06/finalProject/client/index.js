@@ -1,22 +1,9 @@
-import { vec3 } from "./src/mth/mth_vec3.js";
-import { renderer } from "./src/rnd/rnd.js";
-import * as unit from "./src/units/units.js";
-
-// Main project function
-function main() {
-  const rnd = renderer("#glCanvas");
-
-  unit.playerUnit(rnd);
-  //unit.cubeUnit(rnd, vec3(0, 0.5, 0), 0.5);
-  unit.plateUnit(rnd, 30, 0);
-  unit.testUnit(rnd);
-  //unit.controlUnit(rnd);
-
-  setInterval(() => {
-    document.querySelector("#title").textContent = `MM6 FPS: ${rnd.timer.FPS}`;
-  }, 1000);
-} // End of 'main' function
-
-window.addEventListener("load", () => {
-  main();
+window.addEventListener("load", (event) => {
+  let nameField = document.querySelector("#nameInput");
+  nameField.addEventListener("keydown", (event) => {
+    if (event.code == "Enter" && nameField.value != "") {
+      sessionStorage.setItem("name", nameField.value);
+      window.location.href = "./engine/engine.html";
+    }
+  });
 });

@@ -1,31 +1,31 @@
 import { getMtl } from "../rnd/res/mtl.js";
 import { mat4 } from "../mth/mth_mat4.js";
+import { vec3 } from "../mth/mth_vec3.js";
 import { prim } from "../rnd/res/prim.js";
-import * as topo from "../rnd/res/topology.js";
+import * as topo from "../rnd/res/topology.js"
 
 // Test unit class
-class _cubeUnit {
-  constructor(rnd, pos, size) {
+class _enemyUnit {
+  constructor(rnd, pos) {
     this.rnd = rnd;
     this.pos = pos;
-    this.size = size;
+    
     this.init();
   }
 
   // Unit initialization function
   async init() {
     const shd = await this.rnd.addShader("phong");
-    const mtl = getMtl(shd, "Gold");
-    this.prim = prim(mtl, topo.setCube());
-    this.prim.matrix = this.prim.matrix.mul(mat4().mul(mat4().setScale(this.size).setTrans(this.pos)));
-
+    const mtl = getMtl(shd, "Peweter");
+    this.prim = prim(mtl, topo.setAABB(vec3(), vec3(1, 2, 1)));
+  
     // Adding unit to render's units array
     this.rnd.addUnit(this);
   } // End of 'init' function
 
   // Rendering unit's primitives function
   draw() {
-    this.prim.draw(mat4().setRotateY(30 * this.rnd.timer.localTime));
+    this.prim.draw(mat4().setTrans(this.pos));
   } // End of 'draw' function
 
   // Responsing function
@@ -34,6 +34,6 @@ class _cubeUnit {
 }
 
 // Unit creation function
-export function cubeUnit(...args) {
-  return new _cubeUnit(...args);
-} // End of 'testUnit' function
+export function enemyUnit(...args) {
+  return new _enemyUnit(...args);
+} // End of 'enemyUnit' function

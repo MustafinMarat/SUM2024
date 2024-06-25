@@ -27,7 +27,7 @@ class _plateUnit {
     vert[4].setTex(1, 0);
     vert[5].setTex(1, 1);
 
-    const texImg = image("plate", "../../../bin/img/floor.jpg");
+    const texImg = image("plate", "bin/img/floor.jpg");
     const tex = texture(this.rnd, texImg);
 
     const data = primData(vert);
