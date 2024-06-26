@@ -1,4 +1,4 @@
-import { getMtl } from "../rnd/res/mtl.js";
+import { mtl } from "../rnd/res/mtl.js";
 import { mat4 } from "../mth/mth_mat4.js";
 import { vec3 } from "../mth/mth_vec3.js";
 import { prim } from "../rnd/res/prim.js";
@@ -6,9 +6,11 @@ import * as topo from "../rnd/res/topology.js";
 
 // Test unit class
 class _playerUnit {
-  constructor(rnd) {
+  constructor(rnd, color) {
     this.rnd = rnd;
+    this.controlable = false;
     this.pos = vec3();
+    this.color = color;
     this.speed = 0.1;
     this.velocity = vec3();
     this.jumpSpeed = 0;
@@ -22,8 +24,8 @@ class _playerUnit {
   // Unit initialization function
   async init() {
     const shd = await this.rnd.addShader("phong");
-    const mtl = getMtl(shd, "Ruby");
-    this.prim = prim(mtl, topo.setSphere(500, 500));
+    const material = mtl(shd, "player", this.color.mul(0.7), this.color, vec3(0.727811, 0.626959, 0.626959), 76.8, 1.0);
+    this.prim = prim(material, topo.setSphere(500, 500));
     this.prim.matrix = this.prim.matrix.mul(mat4().setScale(0.1));
 
     // Adding unit to render's units array
@@ -38,8 +40,16 @@ class _playerUnit {
   // Responsing function
   response() {
     // Movement
-    if (this.rnd.input.mButtons[0])
+    if (this.rnd.input.mButtons[0]) {
       this.rnd.canvas.requestPointerLock();
+      this.controlable = true;
+    }
+    // (!!!)
+    if (this.rnd.input.keysClick["Escape"])
+      this.controlable = false;
+
+    if (this.controlable == false)
+      return;
 
     let dir = this.rnd.cam.dir;
     dir.y = 0;
@@ -80,6 +90,11 @@ class _playerUnit {
     dir = vec3(Math.sin(this.headX) * Math.cos(this.headY), Math.sin(this.headY), Math.cos(this.headX) * Math.cos(this.headY)).mul(3);
     this.rnd.cam.setCam(this.pos.add(vec3(0, 1, 0)), this.pos.add(dir), vec3(0, 1, 0));
   } // End of 'response' function
+
+  // Closing unit function
+  close() {
+    this.active = false;
+  } // End of 'close' function
 }
 
 // Unit creation function

@@ -1,6 +1,5 @@
-import { vec3 } from '../mth/mth_vec3.js'
-import { mat4 } from '../mth/mth_mat4.js'
-import { camera } from '../mth/mth_cam.js'
+import { vec3 } from '../mth/mth_vec3.js';
+import { camera } from '../mth/mth_cam.js';
 import { shader } from './res/shd.js';
 import { Timer } from '../timer.js';
 import { input } from './input.js';
@@ -9,7 +8,6 @@ import { input } from './input.js';
 class _renderer {
   gl;
   canvas;
-  controlable = false;
   shds = [];
   units = [];
   AABB = [];
@@ -52,7 +50,7 @@ class _renderer {
       this.render();
     
       window.requestAnimationFrame(anim);
-    }  
+    }
 
     anim();
   }
@@ -97,6 +95,22 @@ class _renderer {
     if (this.units != undefined)
       for (let unit of this.units)
         unit.draw();
+
+    // Deleting anactive units
+    if (this.units != undefined)
+      for (let ind in this.units)
+        if (this.units[ind].active != undefined && this.units[ind].active == false) {
+          delete this.units[ind];
+          this.units.length--;
+        }
+
+    // (!!!) Deleting anactive BB
+    if (this.AABB != undefined)
+      for (let ind in this.AABB)
+        if (this.AABB[ind].active != undefined && this.AABB[ind].active == false) {
+          delete this.AABB[ind];
+          this.AABB.length--;
+        }
   } // End of 'render' function 
 }  
 

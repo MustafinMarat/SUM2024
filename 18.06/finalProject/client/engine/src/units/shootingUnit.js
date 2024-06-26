@@ -8,8 +8,15 @@ import * as topo from "../rnd/res/topology.js"
 class _shootingUnit {
   constructor(rnd) {
     this.rnd = rnd;
+    this.ammo = 10;
+    this.shootng = false;
     
     this.init();
+
+    this.rnd.canvas.addEventListener("mousedown", (event) => {
+      this.shootng = true;
+      event.preventDefault();
+    });
   }
 
   // Unit initialization function
@@ -31,8 +38,8 @@ class _shootingUnit {
 
   // Responsing function
   response() {
-    if (this.rnd.input.mButtonsClick[0]) {
-       
+    if (this.ammo > 0 && this.shootng) { 
+      this.shootng = false;      
       let bulletRay = ray(this.rnd.cam.loc, this.rnd.cam.dir);
 
       for (let AABB of this.rnd.AABB) {
@@ -40,13 +47,23 @@ class _shootingUnit {
         if (t[0] <= t[1] && t[0] >= 0) {
           if (this.hits.length > 100)
             this.hits.shift(); 
-          let hit = prim(this.mtl, topo.setIcosahedron(), false);
+          let hit = prim(this.mtl, topo.set30hedron(), false);
           hit.matrix = mat4().setScale(0.01).mul(mat4().setTrans(bulletRay.getPoint(t[0])));
           this.hits.push(hit);
         }
       }
+      this.ammo--;
     }
+   if (this.ammo <= 0)
+    setTimeout(() => {
+      this.ammo = 10;
+    }, 2000);
   } // End of 'response' function
+
+  // Closing unit function
+  close() {
+    this.active = false;
+  } // End of 'close' function
 }
 
 // Unit creation function

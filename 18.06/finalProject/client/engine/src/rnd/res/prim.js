@@ -74,6 +74,7 @@ class _box {
   curVertexes = [];
 
   constructor(minBB, maxBB) {
+    this.active = true; /// (!!!)
     this.minBB = vec3();
     this.maxBB = vec3();
 
@@ -99,6 +100,7 @@ class _box {
       let vert = vertex(vertexes[i]);
       this.vertexes.push(vert);
     }
+    
   }
 
   updateBB() {
@@ -126,6 +128,11 @@ class _box {
       this.curVertexes[i] = vertex(this.vertexes[i].point.mulMatr(m));
     this.updateBB();
   }
+
+   /// (!!!) Closing BB to use function
+   close() {
+    this.active = false;
+  } // End of 'close' function
 }
 
 // Bound Box creation function

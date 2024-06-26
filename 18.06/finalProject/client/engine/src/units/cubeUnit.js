@@ -31,6 +31,11 @@ class _cubeUnit {
   // Responsing function
   response() {
   } // End of 'response' function
+  
+  // Closing unit function
+  close() {
+    this.active = false;
+  } // End of 'close' function
 }
 
 // Unit creation function

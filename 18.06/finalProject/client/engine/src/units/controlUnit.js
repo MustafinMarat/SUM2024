@@ -73,8 +73,12 @@ class _controlUnit {
   response() {
     if (this.input.keysClick["KeyP"])
       this.rnd.timer.isPause = !this.rnd.timer.isPause;
-
   } // End of 'response' function
+
+  // Closing unit function
+  close() {
+    this.active = false;
+  } // End of 'close' function
 }
 
 // Unit creation function
