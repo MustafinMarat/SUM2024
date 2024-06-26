@@ -23,10 +23,15 @@ function main() {
         players[info.text] = {pos: {x: 0, y: 0, z: 0}, color: info.color};
         for (let client of wss.clients)
           if (client != ws)
-            client.send(JSON.stringify({type: "newPlayer", data: players}));
+            client.send(JSON.stringify({type: "newPlayer", data: {name: info.text, pos: {x: 0, y: 0, z: 0}, color: info.color}}));
       }
       if (info.type == "myPos")
         players[info.name].pos = info.pos;
+      if (info.type == "shoot") {
+        for (let client of wss.clients)
+          if (client != ws)
+            client.send(JSON.stringify({type: "shoot", data: {start: info.start, end: info.end, hit: info.hit, color: info.color}}));
+      }
     });
 
     ws.on("close", () => {

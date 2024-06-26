@@ -10,11 +10,18 @@ function main() {
 
   me = unit.playerUnit(rnd, playerColor);
   unit.plateUnit(rnd, 30, 0);
-  unit.shootingUnit(rnd);
+  let shoot = unit.shootingUnit(rnd, playerColor);
   unit.crossUnit(rnd);
-  unit.testUnit(rnd);
+  //unit.testUnit(rnd);
 
   let socket = new WebSocket("ws:/localhost:3030");
+  let chatWindow = document.querySelector("#playersWindow");
+  {
+    let newPlayer = document.createElement('div');
+    newPlayer.id = playerName;
+    newPlayer.innerText = playerName;
+    chatWindow.appendChild(newPlayer);
+  }
 
   if (window.socket == undefined)
     window.socket = socket;
@@ -25,14 +32,24 @@ function main() {
 
   socket.onmessage = (event) => {
     let info = JSON.parse(event.data);
-    if (info.type == "newPlayer")
+    if (info.type == "newPlayer") {
+      players[info.data.name] = unit.enemyUnit(rnd, info.data.name, vec3(info.data.pos), vec3(info.data.color));
+      if (info.data.name) {
+        let newPlayer = document.createElement('div');
+        newPlayer.id = info.data.name;
+        newPlayer.innerText = info.data.name;
+        chatWindow.appendChild(newPlayer);
+      }
+    }
+    if (info.type == "start") 
       for (let character in info.data)
-        if (character != playerName)
-          players[character] = unit.enemyUnit(rnd, vec3(info.data[character].pos), vec3(info.data[character].color));
-    if (info.type == "start")
-      for (let character in info.data)
-        if (character != playerName)
-          players[character] = unit.enemyUnit(rnd, vec3(info.data[character].pos), vec3(info.data[character].color));
+        if (character != playerName) {
+          players[character] = unit.enemyUnit(rnd, character, vec3(info.data[character].pos), vec3(info.data[character].color));
+          let newPlayer = document.createElement('div');
+          newPlayer.id = character;
+          newPlayer.innerText = character;
+          chatWindow.appendChild(newPlayer);
+        }
     if (info.type == "setPos")
       for (let character in info.data)
         if (character != playerName)
@@ -41,6 +58,13 @@ function main() {
     if (info.type == "playerClose") {
       players[info.data].close();
       delete players[info.data];
+      let toDel =  document.getElementById(info.data);
+      toDel.remove();
+    }
+    if (info.type == "shoot") {
+      shoot.addHit(vec3(info.data.start), vec3(info.data.end), vec3(info.data.color));
+      if (info.data.hit == playerName)
+        window.location.href = "/index.html";
     }
   };
 

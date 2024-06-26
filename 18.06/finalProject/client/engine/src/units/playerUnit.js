@@ -40,7 +40,7 @@ class _playerUnit {
   // Responsing function
   response() {
     // Movement
-    if (this.rnd.input.mButtons[0]) {
+    if (this.rnd.input.keysClick["Enter"]) {
       this.rnd.canvas.requestPointerLock();
       this.controlable = true;
     }

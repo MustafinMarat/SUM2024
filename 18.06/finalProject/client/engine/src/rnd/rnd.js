@@ -100,16 +100,14 @@ class _renderer {
     if (this.units != undefined)
       for (let ind in this.units)
         if (this.units[ind].active != undefined && this.units[ind].active == false) {
-          delete this.units[ind];
-          this.units.length--;
+          this.units.splice(ind, ind);
         }
 
     // (!!!) Deleting anactive BB
     if (this.AABB != undefined)
       for (let ind in this.AABB)
         if (this.AABB[ind].active != undefined && this.AABB[ind].active == false) {
-          delete this.AABB[ind];
-          this.AABB.length--;
+          this.AABB.splice(ind, ind);
         }
   } // End of 'render' function 
 }  

@@ -6,9 +6,10 @@ import * as topo from "../rnd/res/topology.js"
 
 // Test unit class
 class _enemyUnit {
-  constructor(rnd, pos, color) {
+  constructor(rnd, name, pos, color) {
     this.rnd = rnd;
     this.pos = pos;
+    this.name = name;
     this.color = color;
     this.active = true;
     
@@ -20,6 +21,7 @@ class _enemyUnit {
     const shd = await this.rnd.addShader("phong");
     const material = mtl(shd, "player", this.color.mul(0.7), this.color, vec3(0.3333,0.3333,0.521569), 9.84615, 1.0);
     this.prim = prim(material, topo.setAABB(vec3(), vec3(0.5, 1, 0.5)));
+    this.prim.BB.enemy = this;
   
     // Adding unit to render's units array
     this.rnd.addUnit(this);

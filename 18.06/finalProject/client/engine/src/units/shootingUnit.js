@@ -1,14 +1,14 @@
-import { getMtl } from "../rnd/res/mtl.js";
-import { mat4 } from "../mth/mth_mat4.js";
 import { ray } from "../mth/mth_ray.js";
 import { prim } from "../rnd/res/prim.js";
-import * as topo from "../rnd/res/topology.js"
+import { mtl } from "../rnd/res/mtl.js";
+import { vec3 } from "../mth/mth_vec3.js";
+import * as topo from "../rnd/res/topology.js";
 
 // Test unit class
 class _shootingUnit {
-  constructor(rnd) {
+  constructor(rnd, color) {
     this.rnd = rnd;
-    this.ammo = 10;
+    this.color = color;
     this.shootng = false;
     
     this.init();
@@ -21,10 +21,8 @@ class _shootingUnit {
 
   // Unit initialization function
   async init() {
-    const shd = await this.rnd.addShader("phong");
-    
-    this.mtl = getMtl(shd, "Turquoise");
     this.hits = [];
+    this.shd = await this.rnd.addShader("bullets");
     
     // Adding unit to render's units array
     this.rnd.addUnit(this);
@@ -33,37 +31,57 @@ class _shootingUnit {
   // Rendering unit's primitives function
   draw() {
     for (let hit of this.hits)
-      hit.draw();
+      if (hit)
+        hit.draw();
   } // End of 'draw' function
 
   // Responsing function
   response() {
-    if (this.ammo > 0 && this.shootng) { 
+    if (this.shootng) { 
       this.shootng = false;      
       let bulletRay = ray(this.rnd.cam.loc, this.rnd.cam.dir);
+      let minT = Infinity;
+      let hitName = "";
 
       for (let AABB of this.rnd.AABB) {
         let t = bulletRay.getIntersection(AABB.minBB, AABB.maxBB);
         if (t[0] <= t[1] && t[0] >= 0) {
-          if (this.hits.length > 100)
-            this.hits.shift(); 
-          let hit = prim(this.mtl, topo.set30hedron(), false);
-          hit.matrix = mat4().setScale(0.01).mul(mat4().setTrans(bulletRay.getPoint(t[0])));
-          this.hits.push(hit);
+          if (t[0] < minT)
+            minT = t[0];
+            if (AABB.enemy)
+              hitName = AABB.enemy.name;
         }
       }
-      this.ammo--;
+      if (this.hits.length > 100)
+        while (this.hits.length > 100)
+          this.hits.shift(); 
+      this.addHit(this.rnd.cam.loc, bulletRay.getPoint(minT), this.color);
+      if (socket)
+        socket.send(JSON.stringify({type: "shoot", start: this.rnd.cam.loc, end: bulletRay.getPoint(minT), hit: hitName, color: this.color}));
     }
-   if (this.ammo <= 0)
-    setTimeout(() => {
-      this.ammo = 10;
-    }, 2000);
+    
+    for (let ind in this.hits)
+      if (this.hits[ind].active == false) {
+        delete this.hits[ind];
+        this.hits.length--;
+      }
   } // End of 'response' function
 
   // Closing unit function
   close() {
     this.active = false;
   } // End of 'close' function
+
+  // Adding enemy hit to array
+  addHit(start, end, color) {
+    const material = mtl(this.shd, "bullet", color.mul(0.7), color, vec3(0.3333,0.3333,0.521569), 9.84615, 1.0);
+    let hit = prim(material, topo.setLine(start, end), false);
+    hit.active = true;
+    setTimeout(() => {
+      hit.active = false;
+    }, 100);
+    this.hits.push(hit);
+  } // End of 'addHit' function
 }
 
 // Unit creation function
