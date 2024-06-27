@@ -16,6 +16,7 @@ class _playerUnit {
     this.jumpSpeed = 0;
     this.headX = 0;
     this.headY = 0;
+    this.hp = 3;
     this.init();
 
     this.rnd.cam.setCam(vec3(0, 8, 8), vec3(0), vec3(0, 1, 0))

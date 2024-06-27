@@ -46,24 +46,21 @@ class _shootingUnit {
       for (let AABB of this.rnd.AABB) {
         let t = bulletRay.getIntersection(AABB.minBB, AABB.maxBB);
         if (t[0] <= t[1] && t[0] >= 0) {
-          if (t[0] < minT)
+          if (t[0] < minT) {
             minT = t[0];
             if (AABB.enemy)
               hitName = AABB.enemy.name;
+          }
         }
       }
-      if (this.hits.length > 100)
-        while (this.hits.length > 100)
-          this.hits.shift(); 
-      this.addHit(this.rnd.cam.loc, bulletRay.getPoint(minT), this.color);
+      this.addHit(this.rnd.cam.loc.sub(vec3(0, 1, 0)), bulletRay.getPoint(minT), this.color);
       if (socket)
         socket.send(JSON.stringify({type: "shoot", start: this.rnd.cam.loc, end: bulletRay.getPoint(minT), hit: hitName, color: this.color}));
     }
     
     for (let ind in this.hits)
       if (this.hits[ind].active == false) {
-        delete this.hits[ind];
-        this.hits.length--;
+        this.hits.splice(ind, 1);
       }
   } // End of 'response' function
 

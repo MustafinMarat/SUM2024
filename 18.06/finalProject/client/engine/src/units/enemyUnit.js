@@ -9,6 +9,7 @@ class _enemyUnit {
   constructor(rnd, name, pos, color) {
     this.rnd = rnd;
     this.pos = pos;
+    this.dir = vec3(1, 0, 0);
     this.name = name;
     this.color = color;
     this.active = true;
@@ -20,7 +21,9 @@ class _enemyUnit {
   async init() {
     const shd = await this.rnd.addShader("phong");
     const material = mtl(shd, "player", this.color.mul(0.7), this.color, vec3(0.3333,0.3333,0.521569), 9.84615, 1.0);
-    this.prim = prim(material, topo.setAABB(vec3(), vec3(0.5, 1, 0.5)));
+    const model = await topo.loadObj("cow.obj");
+    this.prim = prim(material, model);
+    this.prim.matrix = mat4().setScale(0.1).mul(mat4().setRotateZ(90)).mul(mat4().setRotateY(180));
     this.prim.BB.enemy = this;
   
     // Adding unit to render's units array
@@ -29,7 +32,9 @@ class _enemyUnit {
 
   // Rendering unit's primitives function
   draw() {
-    this.prim.draw(mat4().setTrans(this.pos));
+    let rot = mat4().setRotateY(Math.atan2(this.dir.z, this.dir.x) * 180 / Math.PI);
+    let tr = mat4().setTrans(this.pos);
+    this.prim.draw(rot.mul(tr));
   } // End of 'draw' function
 
   // Responsing function
@@ -46,6 +51,12 @@ class _enemyUnit {
   getPos(pos) {
     this.pos = vec3(pos);
   } // End of 'getPos' function
+
+  // Getting (!!!) enemy view direction from server function
+  getDir(dir) {
+    this.dir = vec3(dir);
+  } // End of 'getPos' function
+
 }
 
 // Unit creation function

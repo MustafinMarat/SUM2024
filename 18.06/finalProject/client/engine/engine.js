@@ -53,8 +53,10 @@ function main() {
     if (info.type == "setPos")
       for (let character in info.data)
         if (character != playerName)
-          if (players[character])
+          if (players[character]) {
             players[character].getPos(info.data[character].pos);
+            players[character].getDir(info.data[character].dir);
+          }
     if (info.type == "playerClose") {
       players[info.data].close();
       delete players[info.data];
@@ -63,13 +65,17 @@ function main() {
     }
     if (info.type == "shoot") {
       shoot.addHit(vec3(info.data.start), vec3(info.data.end), vec3(info.data.color));
-      if (info.data.hit == playerName)
-        window.location.href = "/index.html";
+      if (info.data.hit == playerName) {
+        me.hp--;
+        document.querySelector("#healthPoints").textContent = `HP: ${me.hp}`;
+        if (me.hp <= 0) 
+          window.location.href = "/index.html";
+      }
     }
   };
 
   setInterval(() => {
-    socket.send(JSON.stringify({type: "myPos", name: playerName, pos: me.pos}));
+    socket.send(JSON.stringify({type: "myPos", name: playerName, pos: me.pos, dir: rnd.cam.dir}));
   }, 10);
 
   setInterval(() => {

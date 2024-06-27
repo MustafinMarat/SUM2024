@@ -312,8 +312,8 @@ export function setSphere(sizePhi, sizeTheta) {
 }
 
 export function setLine(start, end) {
-  const vertexes = [vertex(start), vertex(end), vertex(end.add(vec3(0, 0.005, 0))), 
-                    vertex(start), vertex(end.add(vec3(0, 0.005, 0))), vertex(start.add(vec3(0, 0.005, 0)))];
+  const vertexes = [vertex(start), vertex(end), vertex(end.add(vec3(0.005))), 
+                    vertex(start), vertex(end.add(vec3(0.005))), vertex(start.add(vec3(0.005)))];
   return primData(vertexes);
 }
 
@@ -339,4 +339,42 @@ export function setAABB(minBB, maxBB) {
   ];
 
   return primData(vertexes);
+}
+
+export async function loadObj(fileName) {
+  let vert = [];
+  let file = await fetch(`bin/models/${fileName}`);
+  let src = await file.text();
+  let lines = src.split('\n');
+
+  let vertexes = [];
+  let indexes = [];
+  for (let line of lines) {
+      if (line[0] == 'v') {
+          let toks = line.split(' ');
+          let v = [];
+
+          for (let i = 0; i < toks.length; i++) {
+              if (toks[i] == "") {
+                  toks.splice(i, 1);
+                  i--;
+              }
+          }
+
+          for (let i = 1; i < 4; i++)
+              v.push(parseFloat(toks[i]));
+
+          vert.push(vec3(v[0], v[1], v[2]));
+          vertexes.push(vertex(vec3(v[0], v[1], v[2])));
+      } else if (line[0] == 'f') {
+          let toks = line.split(' ');
+
+          for (let t = 1; t < 4; t++) {
+              //vertex(vert[parseInt(toks[t].split('/')[0]) - 1]);
+              indexes.push(parseInt(toks[t].split('/')[0]) - 1);
+          }
+      }
+  }
+
+  return primData(vertexes, indexes);
 }

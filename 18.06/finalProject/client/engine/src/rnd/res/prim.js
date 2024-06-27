@@ -187,6 +187,14 @@ class _prim {
       this.rnd.gl.vertexAttribPointer(texLoc, 2, this.rnd.gl.FLOAT, false, 32, 24);
       this.rnd.gl.enableVertexAttribArray(texLoc);
     }
+
+    if (data.indexes != undefined) {
+      this.numOfElem = data.indexes.length;
+      
+      this.indBuffer = this.rnd.gl.createBuffer();
+      this.rnd.gl.bindBuffer(this.rnd.gl.ELEMENT_ARRAY_BUFFER, this.indBuffer);
+      this.rnd.gl.bufferData(this.rnd.gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(data.indexes), this.rnd.gl.STATIC_DRAW);  
+    }
   }
 
   // Drawing primitive function
