@@ -6,17 +6,19 @@ import * as topo from "../rnd/res/topology.js";
 
 // Test unit class
 class _playerUnit {
-  constructor(rnd, color) {
+  constructor(rnd, name, color, pos) {
     this.rnd = rnd;
+    this.name = name;
     this.controlable = false;
-    this.pos = vec3();
+    this.pos = vec3((Math.random() * 2 - 1) * 30, 0, (Math.random() * 2 - 1) * 30);
     this.color = color;
     this.speed = 0.1;
     this.velocity = vec3();
     this.jumpSpeed = 0;
     this.headX = 0;
     this.headY = 0;
-    this.hp = 3;
+    this.hp = 18;
+    document.querySelector("#healthPoints").textContent = `HP: ${this.hp}`;
     this.init();
 
     this.rnd.cam.setCam(vec3(0, 8, 8), vec3(0), vec3(0, 1, 0))
@@ -79,6 +81,10 @@ class _playerUnit {
 
     if (this.pos.y < 0)
       this.pos.y = 0;
+
+    if (this.pos.x > 30 || this.pos.x < -30 || this.pos.z > 30 || this.pos.z < -30) {
+      this.pos = this.pos.neg();
+    }
     
     this.headX = (window.innerWidth - this.rnd.input.mX) / 1000;
     this.headY = (window.innerHeight - this.rnd.input.mY) / 1000;
@@ -96,6 +102,18 @@ class _playerUnit {
   close() {
     this.active = false;
   } // End of 'close' function
+
+  // Player dead handler function
+  reset() {
+    this.pos = vec3((Math.random() * 2 - 1) * 30, 0, (Math.random() * 2 - 1) * 30);
+    this.speed = 0.1;
+    this.velocity = vec3();
+    this.jumpSpeed = 0;
+    this.headX = 0;
+    this.headY = 0;
+    this.hp = 18;
+    document.querySelector("#healthPoints").textContent = `HP: ${this.hp}`;
+  } // End of 'reset' function
 }
 
 // Unit creation function

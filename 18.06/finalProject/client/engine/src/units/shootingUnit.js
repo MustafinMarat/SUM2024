@@ -6,8 +6,9 @@ import * as topo from "../rnd/res/topology.js";
 
 // Test unit class
 class _shootingUnit {
-  constructor(rnd, color) {
+  constructor(rnd, name, color) {
     this.rnd = rnd;
+    this.name = name;
     this.color = color;
     this.shootng = false;
     
@@ -53,9 +54,14 @@ class _shootingUnit {
           }
         }
       }
-      this.addHit(this.rnd.cam.loc.sub(vec3(0, 1, 0)), bulletRay.getPoint(minT), this.color);
+      if (minT == Infinity) {
+        let dir = this.rnd.cam.dir.mul(15);
+        this.addHit(this.rnd.cam.loc.sub(vec3(0, 1, 0)), dir.add(this.rnd.cam.loc), this.color);  
+      }
+      else
+        this.addHit(this.rnd.cam.loc.sub(vec3(0, 1, 0)), bulletRay.getPoint(minT), this.color);
       if (socket)
-        socket.send(JSON.stringify({type: "shoot", start: this.rnd.cam.loc, end: bulletRay.getPoint(minT), hit: hitName, color: this.color}));
+        socket.send(JSON.stringify({type: "shoot", start: this.rnd.cam.loc, end: bulletRay.getPoint(minT), hit: hitName, name: this.name, color: this.color}));
     }
     
     for (let ind in this.hits)

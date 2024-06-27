@@ -1,8 +1,60 @@
+import { Pane } from "tweakpane";
+
 let 
   gl,
-  timeLoc;
+  timeLoc,
+  pointLoc,
+  controlLoc;
+
+const PARAMS = {
+  speed: 0.5,
+  background: {r: 255, g: 0, b: 55},
+  control: true,
+  pnt: {x: 50, y: 25},
+};
 
 function main() {
+  const pane = new Pane({
+    title: 'Parameters',
+  });
+  const tab = pane.addTab({
+    pages: [
+      {title: 'Parameters'},
+      {title: 'Advanced'},
+    ],
+  });
+  const f1 = tab.pages[0].addFolder({
+    title: 'Basic',
+  });
+  const f2 = tab.pages[1].addFolder({
+    title: 'Non basic',
+  });
+  f1.addBinding(PARAMS, 'speed', {
+    min: 0.0,
+    max: 5.0,
+  });
+  f2.addBinding(PARAMS, 'speed', {
+    options: {
+      low: 0.0,
+      medium: 2.5,
+      high: 5.0,
+    },
+  });
+  f2.addBinding(PARAMS, 'background', {
+    color: {type: 'float'},
+  });
+  f1.addBinding(PARAMS, 'pnt', {
+    x: {step: 0.01, min: -1.0, max: 1.0},
+    y: {step: 0.01, min: -1.0, max: 1.0},
+  });
+  f1.addBinding(PARAMS, 'control');
+  pane.addBinding(PARAMS, 'speed', {
+    readonly: true,
+    view: 'graph',
+    min: -0.5,
+    max: +5.5,
+  });
+
   const canvas = document.querySelector("#glcanvas");
   gl = canvas.getContext("webgl2");
 
@@ -18,7 +70,6 @@ function main() {
   in vec3 InPosition;
     
   out vec2 DrawPos;
-  uniform float Time;
  
   void main( void )
   {
@@ -33,20 +84,22 @@ function main() {
   
   in vec2 DrawPos;
   uniform float Time;
-  uniform vec2 Mouse;
+  uniform vec2 Point;
+  uniform float IsControl;
  
   void main( void )
   {
     float n = 0.0;
     vec2 Coord = DrawPos / 0.8;
-    vec2 Coord0 = Mouse - vec2(-1.0, 1.0), Coord1 = Mouse + vec2(-1.0, 1.0);
+    vec2 Addon = Point;
 
-    Coord = Coord0 + 0.5 * (Coord + 1.0) * (Coord1 - Coord0);
+    if (IsControl == 0.0)
+      Addon = vec2(cos(Time) / 3.0, sin(Time) / 3.0);
 
     vec2 Z = Coord * 2.0;
     while (n < 255.0 && Z.x * Z.x + Z.y * Z.y < 4.0)
     {
-      Z = vec2(Z.x * Z.x - Z.y * Z.y, 2.0 * Z.x * Z.y) + vec2(cos(Time) / 3.0, sin(Time) / 3.0);  
+      Z = vec2(Z.x * Z.x - Z.y * Z.y, 2.0 * Z.x * Z.y) + Addon;  
       n += 1.0;
     }
     OutColor = vec4(n / 8.0, n / 30.0, n / 47.0, 1.0);
@@ -80,6 +133,8 @@ function main() {
  
   // Uniform data
   timeLoc = gl.getUniformLocation(prg, "Time");
+  pointLoc = gl.getUniformLocation(prg, "Point");
+  controlLoc = gl.getUniformLocation(prg, "IsControl")
 
   gl.useProgram(prg);
   
@@ -108,6 +163,7 @@ function loadShader(shaderType, shaderSource) {
 // Main render frame function
 function render() {
   // console.log(`Frame ${x++}`);
+  gl.clearColor(PARAMS.background.r, PARAMS.background.g, PARAMS.background.b, 1.0  );
   gl.clear(gl.COLOR_BUFFER_BIT);
                                                
   if (timeLoc != -1) {
@@ -116,7 +172,9 @@ function render() {
             date.getSeconds() +
             date.getMilliseconds() / 1000;
  
-    gl.uniform1f(timeLoc, t);
+    gl.uniform1f(timeLoc, t * PARAMS.speed);
+    gl.uniform2f(pointLoc, PARAMS.pnt.x, PARAMS.pnt.y);
+    gl.uniform1f(controlLoc, PARAMS.control);
   }
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 } // End of 'render' function
